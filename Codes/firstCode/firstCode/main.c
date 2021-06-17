@@ -1,8 +1,8 @@
 #define F_CPU 1000000
 #include <avr/io.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <util/delay.h>
+#include <stdlib.h>
+#include<time.h>
 
 typedef uint8_t bool;
 #define FALSE 0x00
@@ -13,44 +13,44 @@ typedef uint8_t bool;
 #define RIGHT 1
 typedef enum { O, I, L, J, S, Z,  T } shape_type;
 
-char row[] = {1, 2, 4, 8, 16, 32, 64, 128};
+volatile char row[] = {1, 2, 4, 8, 16, 32, 64, 128};
 
-bool shape_O_array[4][4]={{FALSE,  TRUE,  TRUE, FALSE},
+volatile bool shape_O_array[4][4]={{FALSE,  TRUE,  TRUE, FALSE},
                           {FALSE,  TRUE,  TRUE, FALSE},
                           {FALSE, FALSE, FALSE, FALSE},
                           {FALSE, FALSE, FALSE, FALSE}};
 
-bool shape_I_array[4][4]={{FALSE,  TRUE, FALSE, FALSE},
+volatile bool shape_I_array[4][4]={{FALSE,  TRUE, FALSE, FALSE},
                           {FALSE,  TRUE, FALSE, FALSE},
                           {FALSE,  TRUE, FALSE, FALSE},
                           {FALSE,  TRUE, FALSE, FALSE}};
 
-bool shape_L_array[4][4]={{FALSE,  TRUE, FALSE, FALSE},
+volatile bool shape_L_array[4][4]={{FALSE,  TRUE, FALSE, FALSE},
                           {FALSE,  TRUE, FALSE, FALSE},
                           {FALSE,  TRUE,  TRUE, FALSE},
                           {FALSE, FALSE, FALSE, FALSE}};
 
-bool shape_J_array[4][4]={{FALSE, FALSE,  TRUE, FALSE},
+volatile bool shape_J_array[4][4]={{FALSE, FALSE,  TRUE, FALSE},
                           {FALSE, FALSE,  TRUE, FALSE},
                           {FALSE,  TRUE,  TRUE, FALSE},
                           {FALSE, FALSE, FALSE, FALSE}};
 
-bool shape_S_array[4][4]={{FALSE,  TRUE,  TRUE, FALSE},
+volatile bool shape_S_array[4][4]={{FALSE,  TRUE,  TRUE, FALSE},
                           { TRUE,  TRUE, FALSE, FALSE},
                           {FALSE, FALSE, FALSE, FALSE},
                           {FALSE, FALSE, FALSE, FALSE}};
 
-bool shape_Z_array[4][4]={{ TRUE,  TRUE, FALSE, FALSE},
+volatile bool shape_Z_array[4][4]={{ TRUE,  TRUE, FALSE, FALSE},
                           {FALSE,  TRUE,  TRUE, FALSE},
                           {FALSE, FALSE, FALSE, FALSE},
                           {FALSE, FALSE, FALSE, FALSE}};
 
-bool shape_T_array[4][4]={{ TRUE,  TRUE,  TRUE, FALSE},
+volatile bool shape_T_array[4][4]={{ TRUE,  TRUE,  TRUE, FALSE},
                           {FALSE,  TRUE, FALSE, FALSE},
                           {FALSE, FALSE, FALSE, FALSE},
                           {FALSE, FALSE, FALSE, FALSE}};
 
-bool current_display[16][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+volatile bool current_display[16][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
                              {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
                              {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
                              {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
@@ -69,9 +69,8 @@ bool current_display[16][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, F
 
 bool temp_shape_array[4][4];
 bool current_shape_array[4][4];
-uint8_t current_R = 0;
-uint8_t current_C = 0;
-
+volatile int current_R = 0;
+volatile int current_C = 2;
 
 
 void row_shift(int length, bool shape_array[][4], int direction, int shift_count)	//no wrap around
@@ -199,7 +198,7 @@ void rotate_shape(bool shape_array[][4])
 	align_top_left_justify(temp_shape_array);
 }
 
-bool check_valid(uint8_t row, uint8_t col, bool shape_array[][4])
+bool check_valid(int row, int col, bool shape_array[][4])
 {
 	for(int i=0; i<4; i++){
 		for (int j=0; j<4; j++){
@@ -234,14 +233,26 @@ void set_shape(bool shape_array[][4])
 			}
 		}
 	}
+	//_delay_ms(50);
+}
+void remove_shape(bool shape_array[][4])
+{
+	for(int i=0; i<4; i++){
+		for (int j=0; j<4; j++){
+			if(shape_array[i][j] == TRUE){
+				current_display[current_R+i][current_C+j] = FALSE;
+			}
+		}
+	}
+	//_delay_ms(100);
 }
 
-uint8_t get_col(uint8_t row)
+int get_col(int row)
 {
-	uint8_t col_value = 0x00;
+	int col_value = 0x00;
 	for (int j=0; j<8; j++){
 		if(current_display[row][j] == TRUE){
-			col_value |= 1<<(7-j);
+			col_value |= 1<<(j);
 		}
 	}
 	return col_value;
@@ -261,7 +272,7 @@ void remove_row(int row){
 }
 void update_score1x(){
 	uint8_t temp ;
-	uint8_t update = 0;
+	int update = 0;
 	for(int i = 0 ; i < 16 ; i++){
 		temp = TRUE;
 		for(int j = 0 ; j < 8; j++){
@@ -275,10 +286,10 @@ void update_score1x(){
 }
 void update_score2x(){
 	uint8_t temp ;
-	uint8_t update = 0;
+	int update = 0;
 	for(int i = 0 ; i < 12 ; i++){
 		temp = TRUE;
-		uint8_t ii = i;
+		int ii = i;
 		for(int t = 0; t < 4; t++){
 			for(int j = 0 ; j < 8; j++){
 				temp &= current_display[ii][j];
@@ -294,22 +305,26 @@ void update_score2x(){
 	}
 }
 void go_left(){
+	remove_shape(current_shape_array);
 	if(check_valid(current_R, current_C-1 , current_shape_array) == TRUE){
 		current_C--;
 	}
 	set_shape(current_shape_array);
 }
 void go_right(){
+	remove_shape(current_shape_array);
 	if(check_valid(current_R, current_C+1 , current_shape_array) == TRUE){
 		current_C++;
 	}
 	set_shape(current_shape_array);
 }
 void go_down(){
+	remove_shape(current_shape_array);
 	if(check_valid(current_R+1, current_C , current_shape_array) == TRUE){
 		current_R++;
 	}
 	else{
+		set_shape(current_shape_array);
 		current_C = 2;
 		current_R = 0;
 		for(int i = 0 ; i < 4; i++){
@@ -321,8 +336,8 @@ void go_down(){
 	set_shape(current_shape_array);
 }
 void generate_shape(){
-	int shape ;
-	shape = rand() % 7;
+	int shape;
+	shape = rand()%7;
 	if( shape == O){
 		for(int i = 0 ; i < 4; i++){
 			for(int j = 0; j < 4; j++){
@@ -376,11 +391,13 @@ void generate_shape(){
 
 int main(void)
 {
+	srand(time(0));
 	DDRA = 0xFF;
 	DDRB = 0xFF;
 	DDRC = 0xFF;
 	DDRD = 0b10000111 ;
 	int i = 0, count = 0;
+	int flag = 0;
 	while (1)
 	{
 		PORTC = ~row[i]; // common row connection
@@ -388,34 +405,40 @@ int main(void)
 		PORTB = get_col(i+8); // lower matrix column
 		i++;
 		if(i > 7) i = 0;
-		_delay_ms(5);
+		_delay_ms(3);
 		if(current_R == 0 && current_C == 2){
 			generate_shape();
+			remove_shape(current_shape_array);
 			if(check_valid(0 , 2 , current_shape_array) == TRUE)
 			set_shape(current_shape_array);
-			else{
+		/*	else{
 				PORTD |= (1<< PD2);
 				_delay_ms(200);
 				PORTD &= ~(1<< PD2);
 				_delay_ms(200);
-			}
+			} */
 		}
 		count++;
 		if(count == 50){
 			go_down();
 			count = 0;
 		}
-		if(PIND & (1<<PD3)){
+		if(count == 25 && flag == 0){
+			go_left();
+			flag = 1;
+		}
+		/*if(!(PIND & (1<<PD3))){
 			go_left();
 		}
-		if(PIND & (1<<PD4)){
+		if(!(PIND & (1<<PD4))){
 			go_right();
 		}
-		if(PIND & (1<<PD5)){
+		if(!(PIND & (1<<PD5))){
 			go_down();
 		}
-		if(PIND & (1<<PD6)){
+		if(!(PIND & (1<<PD6))){
 			rotate_shape(current_shape_array);
+			remove_shape(current_shape_array);
 			if(check_valid(current_R, current_C, temp_shape_array) == TRUE){
 				for(int i = 0 ; i < 4; i++){
 					for(int j = 0; j < 4; j++){
@@ -424,7 +447,7 @@ int main(void)
 				}
 			}
 			set_shape(current_shape_array);
-		}
+		} */
 		
 		
 		
