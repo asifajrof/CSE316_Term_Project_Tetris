@@ -19,6 +19,6 @@ int main(void)
 		PORTD |= 1<<PD2;
 		_delay_ms(200);
 		PORTD &= ~(1<<PD2);
-		_delay_ms(200);
+		//_delay_ms(200);
 	}
 }
