@@ -16,56 +16,56 @@ typedef enum { O, I, L, J, S, Z,  T } shape_type;
 char row[] = {1, 2, 4, 8, 16, 32, 64, 128};
 
 bool shape_O_array[4][4]={{FALSE,  TRUE,  TRUE, FALSE},
-{FALSE,  TRUE,  TRUE, FALSE},
-{FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE}};
+                          {FALSE,  TRUE,  TRUE, FALSE},
+                          {FALSE, FALSE, FALSE, FALSE},
+                          {FALSE, FALSE, FALSE, FALSE}};
 
 bool shape_I_array[4][4]={{FALSE,  TRUE, FALSE, FALSE},
-{FALSE,  TRUE, FALSE, FALSE},
-{FALSE,  TRUE, FALSE, FALSE},
-{FALSE,  TRUE, FALSE, FALSE}};
+                          {FALSE,  TRUE, FALSE, FALSE},
+                          {FALSE,  TRUE, FALSE, FALSE},
+                          {FALSE,  TRUE, FALSE, FALSE}};
 
 bool shape_L_array[4][4]={{FALSE,  TRUE, FALSE, FALSE},
-{FALSE,  TRUE, FALSE, FALSE},
-{FALSE,  TRUE,  TRUE, FALSE},
-{FALSE, FALSE, FALSE, FALSE}};
+                          {FALSE,  TRUE, FALSE, FALSE},
+                          {FALSE,  TRUE,  TRUE, FALSE},
+                          {FALSE, FALSE, FALSE, FALSE}};
 
 bool shape_J_array[4][4]={{FALSE, FALSE,  TRUE, FALSE},
-{FALSE, FALSE,  TRUE, FALSE},
-{FALSE,  TRUE,  TRUE, FALSE},
-{FALSE, FALSE, FALSE, FALSE}};
+                          {FALSE, FALSE,  TRUE, FALSE},
+                          {FALSE,  TRUE,  TRUE, FALSE},
+                          {FALSE, FALSE, FALSE, FALSE}};
 
 bool shape_S_array[4][4]={{FALSE,  TRUE,  TRUE, FALSE},
-{ TRUE,  TRUE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE}};
+                          { TRUE,  TRUE, FALSE, FALSE},
+                          {FALSE, FALSE, FALSE, FALSE},
+                          {FALSE, FALSE, FALSE, FALSE}};
 
 bool shape_Z_array[4][4]={{ TRUE,  TRUE, FALSE, FALSE},
-{FALSE,  TRUE,  TRUE, FALSE},
-{FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE}};
+                          {FALSE,  TRUE,  TRUE, FALSE},
+                          {FALSE, FALSE, FALSE, FALSE},
+                          {FALSE, FALSE, FALSE, FALSE}};
 
 bool shape_T_array[4][4]={{ TRUE,  TRUE,  TRUE, FALSE},
-{FALSE,  TRUE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE}};
+                          {FALSE,  TRUE, FALSE, FALSE},
+                          {FALSE, FALSE, FALSE, FALSE},
+                          {FALSE, FALSE, FALSE, FALSE}};
 
 bool current_display[16][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE}};
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE}};
 
 bool temp_shape_array[4][4];
 bool current_shape_array[4][4];
@@ -171,21 +171,29 @@ void rotate_shape(bool shape_array[][4])
 {
 	//rotate clockwise.
 	//transpose, mirror.
+	bool temp[4][4];
+	
 	for (int i=0; i<4; i++){
 		for (int j=0; j<4; j++){
-			temp_shape_array[i][j] = shape_array[j][i];	//transpose
+			temp[i][j] = shape_array[i][j];	//copy
 		}
 	}
 	
 	for (int i=0; i<4; i++){
 		for (int j=0; j<4; j++){
-			shape_array[i][j] = temp_shape_array[i][j];
+			temp_shape_array[i][j] = temp[j][i];	//transpose
+		}
+	}
+	
+	for (int i=0; i<4; i++){
+		for (int j=0; j<4; j++){
+			temp[i][j] = temp_shape_array[i][j];
 		}
 	}
 
 	for (int i=0; i<4; i++){
 		for (int j=0; j<4; j++){
-			temp_shape_array[i][j] = shape_array[i][3-j];	//mirror
+			temp_shape_array[i][j] = temp[i][3-j];	//mirror
 		}
 	}
 	align_top_left_justify(temp_shape_array);
