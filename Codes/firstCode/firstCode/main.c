@@ -6,7 +6,6 @@
  */ 
 
 #define F_CPU 1000000
-
 #include <avr/io.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,6 +13,10 @@
 typedef uint8_t bool;
 #define FALSE 0x00
 #define TRUE 0xFF
+#define UP -1
+#define DOWN 1
+#define LEFT -1
+#define RIGHT 1
 
 bool shape_D_array[4][4]={{FALSE,  TRUE,  TRUE, FALSE},
 						  {FALSE,  TRUE,  TRUE, FALSE},
@@ -95,9 +98,97 @@ void rotate_shape(bool shape_array[][4])
 	}
 }
 
-void align_top_left_justify(bool shape_array[][4])
+void row_shift(int length, bool** shape_array, int direction, int shift_count)	//no wrap around
+{
+	for(int counter=0; counter<shift_count; counter++){
+		int index = 0;
+		if (direction>0){
+			index = length-1;
+		}
+
+		for (int i=0; i<length-1; i++){
+			for (int j=0; j<length; j++){
+				shape_array[index][j] = shape_array[index-direction][j];
+			}
+			index = index - direction;
+		}
+		for (int j=0; j<length; j++){
+			shape_array[index][j] = FALSE;
+		}
+	}
+}
+
+void col_shift(int length, bool** shape_array, int direction, int shift_count)	//no wrap around
+{
+	for(int counter=0; counter<shift_count; counter++){
+		int index = 0;
+		if (direction>0){
+			index = length-1;
+		}
+
+		for (int j=0; j<length-1; j++){
+			for (int i=0; i<length; i++){
+				shape_array[i][index] = shape_array[i][index-direction];
+			}
+			index = index - direction;
+		}
+		for (int i=0; i<length; i++){
+			shape_array[i][index] = FALSE;
+		}
+	}
+}
+
+void align_top_left_justify(bool** shape_array)
 {
 	//top left justify shape after rotation
+	//top
+	int shift_count = -1;
+	int shift_direction = UP;
+	for (int i=0; i<4; i++){
+		for (int j=0; j<4; j++){
+			if(shape_array[i][j] == TRUE){
+				shift_count = i;
+				break;
+			}
+		}
+		if (shift_count != -1){
+			break;
+		}
+	}
+	row_shift(4,shape_array,shift_direction,shift_count);
+	
+	//left justify
+	int width = 0;
+	int w1 = -1, w2 = -1;
+	for (int j=0; j<4; j++){
+		for (int i=0; i<4; i++){
+			if(shape_array[i][j] == TRUE){
+				if(w1 == -1){
+					w1 = j;
+				}
+				w2 = j;
+				break;
+			}
+		}
+		if((w1 != -1) && (w2<j)){
+			break;
+		}
+	}
+	width = w2 - w1 + 1;
+	if(width == 1 || width == 2){
+		shift_count = w1 - 1;
+	}
+	else if(width == 3 || width == 4){
+		shift_count = w1 - 0;
+	}
+	if(shift_count<0){
+		shift_count = -shift_count;
+		shift_direction = RIGHT;
+	}
+	else{
+		shift_direction = LEFT;
+	}
+	col_shift(4,shape_array,shift_direction,shift_count);
 }
 
 bool check_valid(uint8_t row, uint8_t col, bool shape_array[][4])
@@ -130,7 +221,9 @@ void set_shape(bool shape_array[][4])
 {
 	for(int i=0; i<4; i++){
 		for (int j=0; j<4; j++){
-			current_display[current_R+i][current_C+j] = shape_array[i][j];
+			if(shape_array[i][j] == TRUE){
+				current_display[current_R+i][current_C+j] = shape_array[i][j];
+			}
 		}
 	}
 }
@@ -145,6 +238,7 @@ uint8_t get_col(uint8_t row)
 	}
 	return col_value;
 }
+
 void remove_row(int row){
 	//shift rows downwards from row to 1
 	for(int i = row ; i > 0 ; i--){
