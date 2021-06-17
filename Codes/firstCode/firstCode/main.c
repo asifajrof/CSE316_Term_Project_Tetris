@@ -5,11 +5,11 @@
  * Author : USER
  */ 
 
+#define F_CPU 1000000
+
 #include <avr/io.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#define F_CPU 1000000
 
 typedef uint8_t bool;
 #define FALSE 0x00
@@ -144,6 +144,52 @@ uint8_t get_col(uint8_t row)
 		}
 	}
 	return col_value;
+}
+void remove_row(int row){
+	//shift rows downwards from row to 1
+	for(int i = row ; i > 0 ; i--){
+		for(int j = 0 ; j< 8; j++){
+			current_display[row][j] = current_display[row-1][j];
+		}
+	}
+	//put false in row 0
+	for(int i = 0 ; i < 8; i++){
+		current_display[0][i] = FALSE;
+	}
+}
+void update_score1x(){
+	uint8_t temp ;
+	uint8_t update = 0;
+	for(int i = 0 ; i < 16 ; i++){
+		temp = TRUE;
+		for(int j = 0 ; j < 8; j++){
+			temp &= current_display[i][j];
+		}
+		if(temp == TRUE){
+			update++; // need to send second atmega a signal
+			remove_row(i);
+		}
+	}
+}
+void update_score2x(){
+	uint8_t temp ;
+	uint8_t update = 0;
+	for(int i = 0 ; i < 12 ; i++){
+		temp = TRUE;
+		uint8_t ii = i;
+		for(int t = 0; t < 4; t++){
+			for(int j = 0 ; j < 8; j++){
+				temp &= current_display[ii][j];
+			}
+			ii++;
+		}
+		if(temp == TRUE){
+			update = update + 8; // need to send second atmega a signal
+			for(int t = 0; t < 4; t++){
+				remove_row(i);
+			}
+		}
+	}
 }
 
 int main(void)
