@@ -1,0 +1,11 @@
+[x] 1. Blocks for each shape
+[ ] 2. Update Score Function atmega --->  1
+                             atmega --->  2
+[x] 3. Rotate
+[x] 4. check free space before calling rotate
+[x] 5. Check for space for final placement
+[x] 6. Keep 2d array for entire console
+[x] 7. Generate new piece from top : check if space is free 
+    before every row move
+[ ] 8. Go left
+[ ] 9. Go Right 
