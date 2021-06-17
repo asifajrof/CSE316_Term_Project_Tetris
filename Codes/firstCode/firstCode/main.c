@@ -67,8 +67,38 @@ bool current_display[16][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, F
 							 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 							 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE}};
 
+bool temp_shape_array[4][4];
+
 uint8_t current_R = 0;
 uint8_t current_C = 0;
+
+void rotate_shape(bool shape_array[][4])
+{
+	//rotate clockwise.
+	//transpose, mirror.
+	for (int i=0; i<4; i++){
+		for (int j=0; j<4; j++){
+			temp_shape_array[i][j] = shape_array[j][i];	//transpose
+		}
+	}
+	
+	for (int i=0; i<4; i++){
+		for (int j=0; j<4; j++){
+			shape_array[i][j] = temp_shape_array[i][j];
+		}
+	}
+
+	for (int i=0; i<4; i++){
+		for (int j=0; j<4; j++){
+			temp_shape_array[i][j] = shape_array[i][3-j];	//mirror
+		}
+	}
+}
+
+void align_top_left_justify(bool shape_array[][4])
+{
+	//top left justify shape after rotation
+}
 
 bool check_valid(uint8_t row, uint8_t col, bool shape_array[][4])
 {

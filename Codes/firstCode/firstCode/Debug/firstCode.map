@@ -7,6 +7,11 @@ c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/..
 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_clear_bss.o)
                               main.o (__do_clear_bss)
 
+Allocating common symbols
+Common symbol       size              file
+
+temp_shape_array    0x10              main.o
+
 Discarded input sections
 
  .data          0x00000000        0x0 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.6.364/gcc/dev/atmega32/avr5/crtatmega32.o
@@ -14,6 +19,10 @@ Discarded input sections
  .text          0x00000000        0x0 main.o
  .data          0x00000000        0x0 main.o
  .bss           0x00000000        0x0 main.o
+ .text.rotate_shape
+                0x00000000       0xd4 main.o
+ .text.align_top_left_justify
+                0x00000000        0x2 main.o
  .text.check_valid
                 0x00000000       0x80 main.o
  .text.set_shape
@@ -39,6 +48,7 @@ Discarded input sections
                 0x00000000       0x10 main.o
  .data.shape_D_array
                 0x00000000       0x10 main.o
+ COMMON         0x00000000       0x10 main.o
  .text          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
  .data          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
  .bss           0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
@@ -414,42 +424,42 @@ END GROUP
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x00000000       0x38
+.debug_aranges  0x00000000       0x48
  *(.debug_aranges)
  .debug_aranges
-                0x00000000       0x38 main.o
+                0x00000000       0x48 main.o
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000      0x797
+.debug_info     0x00000000      0x88c
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x00000000      0x4e6 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.6.364/gcc/dev/atmega32/avr5/crtatmega32.o
- .debug_info    0x000004e6      0x2b1 main.o
+ .debug_info    0x000004e6      0x3a6 main.o
 
-.debug_abbrev   0x00000000      0x5d2
+.debug_abbrev   0x00000000      0x5ec
  *(.debug_abbrev)
  .debug_abbrev  0x00000000      0x4a3 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.6.364/gcc/dev/atmega32/avr5/crtatmega32.o
- .debug_abbrev  0x000004a3      0x12f main.o
+ .debug_abbrev  0x000004a3      0x149 main.o
 
-.debug_line     0x00000000      0x2c9
+.debug_line     0x00000000      0x39f
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x00000000      0x116 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.6.364/gcc/dev/atmega32/avr5/crtatmega32.o
- .debug_line    0x00000116      0x1b3 main.o
+ .debug_line    0x00000116      0x289 main.o
 
-.debug_frame    0x00000000       0x60
+.debug_frame    0x00000000       0x80
  *(.debug_frame)
- .debug_frame   0x00000000       0x60 main.o
+ .debug_frame   0x00000000       0x80 main.o
 
-.debug_str      0x00000000      0x3ca
+.debug_str      0x00000000      0x3f3
  *(.debug_str)
  .debug_str     0x00000000      0x196 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.6.364/gcc/dev/atmega32/avr5/crtatmega32.o
- .debug_str     0x00000196      0x234 main.o
-                                0x26d (size before relaxing)
+ .debug_str     0x00000196      0x25d main.o
+                                0x2a2 (size before relaxing)
 
-.debug_loc      0x00000000      0x1a7
+.debug_loc      0x00000000      0x25b
  *(.debug_loc)
- .debug_loc     0x00000000      0x1a7 main.o
+ .debug_loc     0x00000000      0x25b main.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -469,9 +479,9 @@ END GROUP
 .debug_pubtypes
  *(.debug_pubtypes)
 
-.debug_ranges   0x00000000       0x90
+.debug_ranges   0x00000000       0xe8
  *(.debug_ranges)
- .debug_ranges  0x00000000       0x90 main.o
+ .debug_ranges  0x00000000       0xe8 main.o
 
 .debug_macro
  *(.debug_macro)
