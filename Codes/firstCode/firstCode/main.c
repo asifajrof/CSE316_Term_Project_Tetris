@@ -1,14 +1,8 @@
-/*
- * c_test_bool.c
- *
- * Created: 6/17/2021 3:32:34 PM
- * Author : USER
- */ 
-
 #define F_CPU 1000000
 #include <avr/io.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <util/delay.h>
 
 typedef uint8_t bool;
 #define FALSE 0x00
@@ -17,88 +11,70 @@ typedef uint8_t bool;
 #define DOWN 1
 #define LEFT -1
 #define RIGHT 1
+typedef enum { O, I, L, J, S, Z,  T } shape_type;
 
-bool shape_D_array[4][4]={{FALSE,  TRUE,  TRUE, FALSE},
-						  {FALSE,  TRUE,  TRUE, FALSE},
-						  {FALSE, FALSE, FALSE, FALSE},
-						  {FALSE, FALSE, FALSE, FALSE}};
+char row[] = {1, 2, 4, 8, 16, 32, 64, 128};
+
+bool shape_O_array[4][4]={{FALSE,  TRUE,  TRUE, FALSE},
+{FALSE,  TRUE,  TRUE, FALSE},
+{FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE}};
 
 bool shape_I_array[4][4]={{FALSE,  TRUE, FALSE, FALSE},
-						  {FALSE,  TRUE, FALSE, FALSE},
-						  {FALSE,  TRUE, FALSE, FALSE},
-						  {FALSE,  TRUE, FALSE, FALSE}};
+{FALSE,  TRUE, FALSE, FALSE},
+{FALSE,  TRUE, FALSE, FALSE},
+{FALSE,  TRUE, FALSE, FALSE}};
 
 bool shape_L_array[4][4]={{FALSE,  TRUE, FALSE, FALSE},
-						  {FALSE,  TRUE, FALSE, FALSE},
-						  {FALSE,  TRUE,  TRUE, FALSE},
-						  {FALSE, FALSE, FALSE, FALSE}};
+{FALSE,  TRUE, FALSE, FALSE},
+{FALSE,  TRUE,  TRUE, FALSE},
+{FALSE, FALSE, FALSE, FALSE}};
 
 bool shape_J_array[4][4]={{FALSE, FALSE,  TRUE, FALSE},
-						  {FALSE, FALSE,  TRUE, FALSE},
-						  {FALSE,  TRUE,  TRUE, FALSE},
-						  {FALSE, FALSE, FALSE, FALSE}};
+{FALSE, FALSE,  TRUE, FALSE},
+{FALSE,  TRUE,  TRUE, FALSE},
+{FALSE, FALSE, FALSE, FALSE}};
 
 bool shape_S_array[4][4]={{FALSE,  TRUE,  TRUE, FALSE},
-						  { TRUE,  TRUE, FALSE, FALSE},
-						  {FALSE, FALSE, FALSE, FALSE},
-						  {FALSE, FALSE, FALSE, FALSE}};
+{ TRUE,  TRUE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE}};
 
 bool shape_Z_array[4][4]={{ TRUE,  TRUE, FALSE, FALSE},
-						  {FALSE,  TRUE,  TRUE, FALSE},
-						  {FALSE, FALSE, FALSE, FALSE},
-						  {FALSE, FALSE, FALSE, FALSE}};
+{FALSE,  TRUE,  TRUE, FALSE},
+{FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE}};
 
 bool shape_T_array[4][4]={{ TRUE,  TRUE,  TRUE, FALSE},
-						  {FALSE,  TRUE, FALSE, FALSE},
-						  {FALSE, FALSE, FALSE, FALSE},
-						  {FALSE, FALSE, FALSE, FALSE}};
+{FALSE,  TRUE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE}};
 
 bool current_display[16][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-							 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-							 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-							 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-							 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-							 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-							 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-							 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-							 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-							 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-							 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-							 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-							 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-							 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-							 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-							 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE}};
+{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE}};
 
 bool temp_shape_array[4][4];
-
+bool current_shape_array[4][4];
 uint8_t current_R = 0;
 uint8_t current_C = 0;
 
-void rotate_shape(bool shape_array[][4])
-{
-	//rotate clockwise.
-	//transpose, mirror.
-	for (int i=0; i<4; i++){
-		for (int j=0; j<4; j++){
-			temp_shape_array[i][j] = shape_array[j][i];	//transpose
-		}
-	}
-	
-	for (int i=0; i<4; i++){
-		for (int j=0; j<4; j++){
-			shape_array[i][j] = temp_shape_array[i][j];
-		}
-	}
 
-	for (int i=0; i<4; i++){
-		for (int j=0; j<4; j++){
-			temp_shape_array[i][j] = shape_array[i][3-j];	//mirror
-		}
-	}
-}
 
-void row_shift(int length, bool** shape_array, int direction, int shift_count)	//no wrap around
+void row_shift(int length, bool shape_array[][4], int direction, int shift_count)	//no wrap around
 {
 	for(int counter=0; counter<shift_count; counter++){
 		int index = 0;
@@ -118,7 +94,7 @@ void row_shift(int length, bool** shape_array, int direction, int shift_count)	/
 	}
 }
 
-void col_shift(int length, bool** shape_array, int direction, int shift_count)	//no wrap around
+void col_shift(int length, bool shape_array[][4], int direction, int shift_count)	//no wrap around
 {
 	for(int counter=0; counter<shift_count; counter++){
 		int index = 0;
@@ -138,7 +114,7 @@ void col_shift(int length, bool** shape_array, int direction, int shift_count)	/
 	}
 }
 
-void align_top_left_justify(bool** shape_array)
+void align_top_left_justify(bool shape_array[][4])
 {
 	//top left justify shape after rotation
 	//top
@@ -155,7 +131,7 @@ void align_top_left_justify(bool** shape_array)
 			break;
 		}
 	}
-	row_shift(4,shape_array,shift_direction,shift_count);
+	row_shift(4, shape_array,shift_direction,shift_count);
 	
 	//left justify
 	int width = 0;
@@ -189,6 +165,30 @@ void align_top_left_justify(bool** shape_array)
 		shift_direction = LEFT;
 	}
 	col_shift(4,shape_array,shift_direction,shift_count);
+}
+
+void rotate_shape(bool shape_array[][4])
+{
+	//rotate clockwise.
+	//transpose, mirror.
+	for (int i=0; i<4; i++){
+		for (int j=0; j<4; j++){
+			temp_shape_array[i][j] = shape_array[j][i];	//transpose
+		}
+	}
+	
+	for (int i=0; i<4; i++){
+		for (int j=0; j<4; j++){
+			shape_array[i][j] = temp_shape_array[i][j];
+		}
+	}
+
+	for (int i=0; i<4; i++){
+		for (int j=0; j<4; j++){
+			temp_shape_array[i][j] = shape_array[i][3-j];	//mirror
+		}
+	}
+	align_top_left_justify(temp_shape_array);
 }
 
 bool check_valid(uint8_t row, uint8_t col, bool shape_array[][4])
@@ -285,12 +285,141 @@ void update_score2x(){
 		}
 	}
 }
+void go_left(){
+	if(check_valid(current_R, current_C-1 , current_shape_array) == TRUE){
+		current_C--;
+	}
+	set_shape(current_shape_array);
+}
+void go_right(){
+	if(check_valid(current_R, current_C+1 , current_shape_array) == TRUE){
+		current_C++;
+	}
+	set_shape(current_shape_array);
+}
+void go_down(){
+	if(check_valid(current_R+1, current_C , current_shape_array) == TRUE){
+		current_R++;
+	}
+	else{
+		current_C = 2;
+		current_R = 0;
+		for(int i = 0 ; i < 4; i++){
+			for(int j = 0; j < 4; j++){
+				current_shape_array[i][j] = FALSE;
+			}
+		}
+	}
+	set_shape(current_shape_array);
+}
+void generate_shape(){
+	int shape ;
+	shape = rand() % 7;
+	if( shape == O){
+		for(int i = 0 ; i < 4; i++){
+			for(int j = 0; j < 4; j++){
+				current_shape_array[i][j] = shape_O_array[i][j];
+			}
+		}
+	}
+	else if(shape == I){
+		for(int i = 0 ; i < 4; i++){
+			for(int j = 0; j < 4; j++){
+				current_shape_array[i][j] = shape_I_array[i][j];
+			}
+		}
+	}
+	else if(shape == L){
+		for(int i = 0 ; i < 4; i++){
+			for(int j = 0; j < 4; j++){
+				current_shape_array[i][j] = shape_L_array[i][j];
+			}
+		}
+	}
+	else if(shape == J){
+		for(int i = 0 ; i < 4; i++){
+			for(int j = 0; j < 4; j++){
+				current_shape_array[i][j] = shape_J_array[i][j];
+			}
+		}
+	}
+	else if(shape == S){
+		for(int i = 0 ; i < 4; i++){
+			for(int j = 0; j < 4; j++){
+				current_shape_array[i][j] = shape_S_array[i][j];
+			}
+		}
+	}
+	else if(shape == Z){
+		for(int i = 0 ; i < 4; i++){
+			for(int j = 0; j < 4; j++){
+				current_shape_array[i][j] = shape_Z_array[i][j];
+			}
+		}
+	}
+	else if(shape == T){
+		for(int i = 0 ; i < 4; i++){
+			for(int j = 0; j < 4; j++){
+				current_shape_array[i][j] = shape_T_array[i][j];
+			}
+		}
+	}
+}
 
 int main(void)
 {
-    while (1)
-    {
+	DDRA = 0xFF;
+	DDRB = 0xFF;
+	DDRC = 0xFF;
+	DDRD = 0b10000111 ;
+	int i = 0, count = 0;
+	while (1)
+	{
+		PORTC = ~row[i]; // common row connection
+		PORTA = get_col(i); // upper matrix column
+		PORTB = get_col(i+8); // lower matrix column
+		i++;
+		if(i > 7) i = 0;
+		_delay_ms(5);
+		if(current_R == 0 && current_C == 2){
+			generate_shape();
+			if(check_valid(0 , 2 , current_shape_array) == TRUE)
+			set_shape(current_shape_array);
+			else{
+				PORTD |= (1<< PD2);
+				_delay_ms(200);
+				PORTD &= ~(1<< PD2);
+				_delay_ms(200);
+			}
+		}
+		count++;
+		if(count == 50){
+			go_down();
+			count = 0;
+		}
+		if(PIND & (1<<PD3)){
+			go_left();
+		}
+		if(PIND & (1<<PD4)){
+			go_right();
+		}
+		if(PIND & (1<<PD5)){
+			go_down();
+		}
+		if(PIND & (1<<PD6)){
+			rotate_shape(current_shape_array);
+			if(check_valid(current_R, current_C, temp_shape_array) == TRUE){
+				for(int i = 0 ; i < 4; i++){
+					for(int j = 0; j < 4; j++){
+						current_shape_array[i][j] = temp_shape_array[i][j];
+					}
+				}
+			}
+			set_shape(current_shape_array);
+		}
 		
-    }
+		
+		
+	}
 }
 
