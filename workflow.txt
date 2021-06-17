@@ -1,7 +1,7 @@
 [x] 1. Blocks for each shape
 [ ] 2. Update Score Function atmega --->  1
                              atmega --->  2
-[ ] 3. Rotate
+[x] 3. Rotate
 [x] 4. check free space before calling rotate
 [x] 5. Check for space for final placement
 [x] 6. Keep 2d array for entire console
