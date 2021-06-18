@@ -104,7 +104,7 @@ unsigned char USART_Receive(){
 00000086 <main>:
 int main(void)
 {
-    DDRC = 0xFF;
+	DDRC = 0xFF;
   86:	8f ef       	ldi	r24, 0xFF	; 255
   88:	84 bb       	out	0x14, r24	; 20
 	DDRD &= 0b11111100;
@@ -116,8 +116,8 @@ int main(void)
   92:	90 e0       	ldi	r25, 0x00	; 0
   94:	0e 94 36 00 	call	0x6c	; 0x6c <UART_init>
 	
-    while (1) 
-    {
+	while (1)
+	{
 		PORTD |= (1<< PD3);
   98:	82 b3       	in	r24, 0x12	; 18
   9a:	88 60       	ori	r24, 0x08	; 8
