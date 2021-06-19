@@ -379,7 +379,7 @@ void go_down(){
 	set_shape(current_shape_array);
 }
 void generate_shape(int shape){
-	//shape = 0;
+	shape = 0;
 	//	shape = rand()%7;
 	if( shape == 0){
 		for(int i = 0 ; i < 4; i++){
