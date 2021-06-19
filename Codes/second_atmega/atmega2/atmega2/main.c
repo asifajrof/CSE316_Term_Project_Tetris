@@ -92,6 +92,17 @@ volatile bool shape_T_array[8][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FA
 
 volatile bool current_shape_array[8][8];
 
+int get_col(int row)
+{
+	int col_value = 0x00;
+	for (int j=0; j<8; j++){
+		if(current_shape_array[row][j] == TRUE){
+			col_value |= 1<<(j);
+		}
+	}
+	return col_value;
+}
+
 void UART_init(void){
 	int UBRR_Value = 25; // 2400 baud rate
 
@@ -118,14 +129,10 @@ int main(void)
 	DDRB = 0xFF;
 	UART_init();
 	Lcd4_Init();
-	int i = 0;
+	//int i = 0;
 	int score_update = 0;
     while (1) 
     {
-		PORTA = ~row[i];
-		//PORTB = ;
-		i++;
-		if( i > 7) i = 0;
 		int ch = UART_receive();
 		if(ch == 10){
 			score_update++;
@@ -134,25 +141,60 @@ int main(void)
 			score_update += 4;
 		}
 		else if(ch == 0){
-			
+			//shape_O
+			for(int i = 0 ; i < 8; i++){
+				for(int j = 0; j < 8; j++){
+					current_shape_array[i][j] = shape_O_array[i][j];
+				}
+			}
 		}
 		else if(ch == 1){
-			
+			//shape_I
+			for(int i = 0 ; i < 8; i++){
+				for(int j = 0; j < 8; j++){
+					current_shape_array[i][j] = shape_I_array[i][j];
+				}
+			}
 		}
 		else if(ch == 2){
-			
+			//shape_L
+			for(int i = 0 ; i < 8; i++){
+				for(int j = 0; j < 8; j++){
+					current_shape_array[i][j] = shape_L_array[i][j];
+				}
+			}
 		}
 		else if(ch == 3){
-			
+			//shape_J
+			for(int i = 0 ; i < 8; i++){
+				for(int j = 0; j < 8; j++){
+					current_shape_array[i][j] = shape_J_array[i][j];
+				}
+			}
 		}
 		else if(ch == 4){
-			
+			//shape_S
+			for(int i = 0 ; i < 8; i++){
+				for(int j = 0; j < 8; j++){
+					current_shape_array[i][j] = shape_S_array[i][j];
+				}
+			}
 		}
 		else if(ch ==5){
-			
+			//shape_Z
+			for(int i = 0 ; i < 8; i++){
+				for(int j = 0; j < 8; j++){
+					current_shape_array[i][j] = shape_Z_array[i][j];
+				}
+			}
 		}
 		else if(ch == 6){
-			
+			//shape_T
+			for(int i = 0 ; i < 8; i++){
+				for(int j = 0; j < 8; j++){
+					current_shape_array[i][j] = shape_T_array[i][j];
+				}
+			}
 		}
 		char score[10];
 		dtostrf(score_update , 0, 2, score);
@@ -160,6 +202,13 @@ int main(void)
 		Lcd4_Set_Cursor(1,1);
 		Lcd4_Write_String(msg);
 		Lcd4_Write_String(score);
+		
+		for(int i=0; i<8; i++){
+			PORTA = ~row[i];
+			PORTB = get_col(i);
+			_delay_us(500);
+		}
+		//_delay_us(10);
     }
 }
 
