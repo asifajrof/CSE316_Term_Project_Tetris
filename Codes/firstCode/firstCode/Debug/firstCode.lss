@@ -1992,8 +1992,8 @@ int main(void)
 		count++;
  a22:	0f 5f       	subi	r16, 0xFF	; 255
  a24:	1f 4f       	sbci	r17, 0xFF	; 255
-		if(count == 75){
- a26:	0b 34       	cpi	r16, 0x4B	; 75
+		if(count == 50){
+ a26:	02 33       	cpi	r16, 0x32	; 50
  a28:	11 05       	cpc	r17, r1
  a2a:	21 f4       	brne	.+8      	; 0xa34 <main+0x104>
 			go_down();

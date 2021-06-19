@@ -129,7 +129,7 @@ int main(void)
 	DDRB = 0xFF;
 	UART_init();
 	Lcd4_Init();
-	//int i = 0;
+	char ch1 =' ';
 	int score_update = 0;
     while (1) 
     {
@@ -147,6 +147,7 @@ int main(void)
 					current_shape_array[i][j] = shape_O_array[i][j];
 				}
 			}
+			ch1 = 'O';
 		}
 		else if(ch == 1){
 			//shape_I
@@ -155,6 +156,7 @@ int main(void)
 					current_shape_array[i][j] = shape_I_array[i][j];
 				}
 			}
+			ch1 = 'I';
 		}
 		else if(ch == 2){
 			//shape_L
@@ -163,6 +165,7 @@ int main(void)
 					current_shape_array[i][j] = shape_L_array[i][j];
 				}
 			}
+			ch1 = 'L';
 		}
 		else if(ch == 3){
 			//shape_J
@@ -171,6 +174,7 @@ int main(void)
 					current_shape_array[i][j] = shape_J_array[i][j];
 				}
 			}
+			ch1 = 'J';
 		}
 		else if(ch == 4){
 			//shape_S
@@ -179,6 +183,7 @@ int main(void)
 					current_shape_array[i][j] = shape_S_array[i][j];
 				}
 			}
+			ch1 = 'S';
 		}
 		else if(ch ==5){
 			//shape_Z
@@ -187,6 +192,7 @@ int main(void)
 					current_shape_array[i][j] = shape_Z_array[i][j];
 				}
 			}
+			ch1 = 'Z';
 		}
 		else if(ch == 6){
 			//shape_T
@@ -195,13 +201,19 @@ int main(void)
 					current_shape_array[i][j] = shape_T_array[i][j];
 				}
 			}
+			ch1 = 'T';
 		}
 		char score[10];
 		dtostrf(score_update , 0, 2, score);
 		char msg[] = "Score : ";
+		char msg1[15] = "Next piece :   ";
+		msg1[13] = ch1;
 		Lcd4_Set_Cursor(1,1);
 		Lcd4_Write_String(msg);
 		Lcd4_Write_String(score);
+		Lcd4_Set_Cursor(2,1);
+		Lcd4_Write_String(msg1);
+		
 		
 		for(int i=0; i<8; i++){
 			PORTA = ~row[i];

@@ -466,7 +466,7 @@ int main(void)
 			}
 		}
 		count++;
-		if(count == 75){
+		if(count == 50){
 			go_down();
 			count = 0;
 		}
