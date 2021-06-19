@@ -16,90 +16,61 @@ typedef enum { O, I, L, J, S, Z,  T } shape_type;
 volatile char row[] = {1, 2, 4, 8, 16, 32, 64, 128};
 
 volatile bool shape_O_array[4][4]={{FALSE,  TRUE,  TRUE, FALSE},
-{FALSE,  TRUE,  TRUE, FALSE},
-{FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE}};
+                          {FALSE,  TRUE,  TRUE, FALSE},
+                          {FALSE, FALSE, FALSE, FALSE},
+                          {FALSE, FALSE, FALSE, FALSE}};
 
 volatile bool shape_I_array[4][4]={{FALSE,  TRUE, FALSE, FALSE},
-{FALSE,  TRUE, FALSE, FALSE},
-{FALSE,  TRUE, FALSE, FALSE},
-{FALSE,  TRUE, FALSE, FALSE}};
+                          {FALSE,  TRUE, FALSE, FALSE},
+                          {FALSE,  TRUE, FALSE, FALSE},
+                          {FALSE,  TRUE, FALSE, FALSE}};
 
 volatile bool shape_L_array[4][4]={{FALSE,  TRUE, FALSE, FALSE},
-{FALSE,  TRUE, FALSE, FALSE},
-{FALSE,  TRUE,  TRUE, FALSE},
-{FALSE, FALSE, FALSE, FALSE}};
+                          {FALSE,  TRUE, FALSE, FALSE},
+                          {FALSE,  TRUE,  TRUE, FALSE},
+                          {FALSE, FALSE, FALSE, FALSE}};
 
 volatile bool shape_J_array[4][4]={{FALSE, FALSE,  TRUE, FALSE},
-{FALSE, FALSE,  TRUE, FALSE},
-{FALSE,  TRUE,  TRUE, FALSE},
-{FALSE, FALSE, FALSE, FALSE}};
+                          {FALSE, FALSE,  TRUE, FALSE},
+                          {FALSE,  TRUE,  TRUE, FALSE},
+                          {FALSE, FALSE, FALSE, FALSE}};
 
 volatile bool shape_S_array[4][4]={{FALSE,  TRUE,  TRUE, FALSE},
-{ TRUE,  TRUE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE}};
+                          { TRUE,  TRUE, FALSE, FALSE},
+                          {FALSE, FALSE, FALSE, FALSE},
+                          {FALSE, FALSE, FALSE, FALSE}};
 
 volatile bool shape_Z_array[4][4]={{ TRUE,  TRUE, FALSE, FALSE},
-{FALSE,  TRUE,  TRUE, FALSE},
-{FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE}};
+                          {FALSE,  TRUE,  TRUE, FALSE},
+                          {FALSE, FALSE, FALSE, FALSE},
+                          {FALSE, FALSE, FALSE, FALSE}};
 
 volatile bool shape_T_array[4][4]={{ TRUE,  TRUE,  TRUE, FALSE},
-{FALSE,  TRUE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE}};
+                          {FALSE,  TRUE, FALSE, FALSE},
+                          {FALSE, FALSE, FALSE, FALSE},
+                          {FALSE, FALSE, FALSE, FALSE}};
 
 volatile bool current_display[16][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
-{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE}};
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+                             {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE}};
 
 bool temp_shape_array[4][4];
 bool current_shape_array[4][4];
 volatile int current_R = 0;
 volatile int current_C = 2;
-
-void UART_init(void){
-	
-	int UBBRValue = 25;//AS described before setting baud rate
-
-	//Put the upper part of the baud number here (bits 8 to 11)
-
-	UBRRH = (unsigned char) (UBBRValue >> 8);
-
-	//Put the remaining part of the baud number here
-
-	UBRRL = (unsigned char) UBBRValue;
-
-	//Enable the receiver and transmitter
-
-	UCSRB = (1 << TXEN);
-
-	//Set 2 stop bits and data bit length is 8-bit
-
-	//UCSRC = (1 << USBS) | (3 << UCSZ0);
-	UCSRC = 0b10001110;
-}
-
-void UART_send(unsigned char data){
-	// wait until UDRE flag is set to logic 1
-	while ((UCSRA & (1<<UDRE)) == 0x00);
-	UDR = data; // Write character to UDR for transmission
-	
-}
 
 
 void row_shift(int length, bool shape_array[][4], int direction, int shift_count)	//no wrap around
@@ -301,23 +272,21 @@ void remove_row(int row){
 }
 void update_score1x(){
 	uint8_t temp ;
+	int update = 0;
 	for(int i = 0 ; i < 16 ; i++){
 		temp = TRUE;
 		for(int j = 0 ; j < 8; j++){
 			temp &= current_display[i][j];
 		}
 		if(temp == TRUE){
-			UART_send(10);
-			PORTD |= 1 << PD7 ;
-			_delay_ms(200);
-			PORTD &= ~(1 << PD7);
-			_delay_ms(200);
+			update++; // need to send second atmega a signal
 			remove_row(i);
 		}
 	}
 }
 void update_score2x(){
 	uint8_t temp ;
+	int update = 0;
 	for(int i = 0 ; i < 12 ; i++){
 		temp = TRUE;
 		int ii = i;
@@ -328,11 +297,7 @@ void update_score2x(){
 			ii++;
 		}
 		if(temp == TRUE){
-			UART_send(11);
-			PORTD |= 1 << PD7 ;
-			_delay_ms(200);
-			PORTD &= ~(1 << PD7);
-			_delay_ms(200);
+			update = update + 8; // need to send second atmega a signal
 			for(int t = 0; t < 4; t++){
 				remove_row(i);
 			}
@@ -370,52 +335,52 @@ void go_down(){
 	}
 	set_shape(current_shape_array);
 }
-void generate_shape(int shape){
-	shape = 2;
-	//	shape = rand()%7;
-	if( shape == 0){
+void generate_shape(){
+	int shape;
+	shape = rand()%7;
+	if( shape == O){
 		for(int i = 0 ; i < 4; i++){
 			for(int j = 0; j < 4; j++){
 				current_shape_array[i][j] = shape_O_array[i][j];
 			}
 		}
 	}
-	else if(shape == 1){
+	else if(shape == I){
 		for(int i = 0 ; i < 4; i++){
 			for(int j = 0; j < 4; j++){
 				current_shape_array[i][j] = shape_I_array[i][j];
 			}
 		}
 	}
-	else if(shape == 2){
+	else if(shape == L){
 		for(int i = 0 ; i < 4; i++){
 			for(int j = 0; j < 4; j++){
 				current_shape_array[i][j] = shape_L_array[i][j];
 			}
 		}
 	}
-	else if(shape == 3){
+	else if(shape == J){
 		for(int i = 0 ; i < 4; i++){
 			for(int j = 0; j < 4; j++){
 				current_shape_array[i][j] = shape_J_array[i][j];
 			}
 		}
 	}
-	else if(shape == 4){
+	else if(shape == S){
 		for(int i = 0 ; i < 4; i++){
 			for(int j = 0; j < 4; j++){
 				current_shape_array[i][j] = shape_S_array[i][j];
 			}
 		}
 	}
-	else if(shape == 5){
+	else if(shape == Z){
 		for(int i = 0 ; i < 4; i++){
 			for(int j = 0; j < 4; j++){
 				current_shape_array[i][j] = shape_Z_array[i][j];
 			}
 		}
 	}
-	else if(shape == 6){
+	else if(shape == T){
 		for(int i = 0 ; i < 4; i++){
 			for(int j = 0; j < 4; j++){
 				current_shape_array[i][j] = shape_T_array[i][j];
@@ -424,20 +389,15 @@ void generate_shape(int shape){
 	}
 }
 
-
 int main(void)
 {
 	srand(time(0));
-	int rand_val[100];
-	for(int i = 0; i < 100; i++){
-		rand_val[i] = rand()%7;
-	}
 	DDRA = 0xFF;
 	DDRB = 0xFF;
 	DDRC = 0xFF;
-	DDRD = 0b10000100 ;
-	int i = 0, count = 0, r = 0;
-	UART_init();
+	DDRD = 0b10000111 ;
+	int i = 0, count = 0;
+	int flag = 0;
 	while (1)
 	{
 		PORTC = ~row[i]; // common row connection
@@ -445,28 +405,29 @@ int main(void)
 		PORTB = get_col(i+8); // lower matrix column
 		i++;
 		if(i > 7) i = 0;
-		_delay_ms(2);
+		_delay_ms(3);
 		if(current_R == 0 && current_C == 2){
-			generate_shape(rand_val[r]);
-			r++; // make sure r doesn't exceed 100 later !!
-			UART_send(rand_val[r]);
+			generate_shape();
 			remove_shape(current_shape_array);
 			if(check_valid(0 , 2 , current_shape_array) == TRUE)
 			set_shape(current_shape_array);
-			else{
-				UART_send(9);
-				PORTD |= (1<< PD7);
+		/*	else{
+				PORTD |= (1<< PD2);
 				_delay_ms(200);
-				PORTD &= ~(1<< PD7);
+				PORTD &= ~(1<< PD2);
 				_delay_ms(200);
-			}
+			} */
 		}
 		count++;
-		if(count == 25){
+		if(count == 50){
 			go_down();
 			count = 0;
 		}
-		if(!(PIND & (1<<PD3))){
+		if(count == 25 && flag == 0){
+			go_left();
+			flag = 1;
+		}
+		/*if(!(PIND & (1<<PD3))){
 			go_left();
 		}
 		if(!(PIND & (1<<PD4))){
@@ -486,14 +447,9 @@ int main(void)
 				}
 			}
 			set_shape(current_shape_array);
-		}
-		update_score2x();
-		update_score1x();
-		UART_send(11);
-		PORTD |= 1 << PD7 ;
-		_delay_ms(200);
-		PORTD &= ~(1 << PD7);
-		_delay_ms(200);
+		} */
+		
+		
 		
 	}
 }
