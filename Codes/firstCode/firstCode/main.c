@@ -441,6 +441,7 @@ int main(void)
 	DDRC = 0xFF;
 	DDRD = 0b10000100 ;
 	int i = 0, count = 0, r = 0;
+	int temp[] = {0, 2, 3, 4, 5, 6};
 	UART_init();
 	while (1)
 	{
@@ -451,7 +452,7 @@ int main(void)
 		if(i > 7) i = 0;
 		_delay_ms(4);
 		if(current_R == 0 && current_C == 2){
-			generate_shape(rand_val[r]);
+			generate_shape(temp[i]);
 			r++; // make sure r doesn't exceed 100 later !!
 			UART_send(rand_val[r]);
 			remove_shape(current_shape_array);
