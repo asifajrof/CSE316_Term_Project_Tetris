@@ -14,7 +14,15 @@ typedef uint8_t bool;
 typedef enum { O, I, L, J, S, Z,  T } shape_type;
 
 volatile char row[] = {1, 2, 4, 8, 16, 32, 64, 128};
-
+int rand_val[100] =   {6 ,1 ,3 ,4 ,0 ,4 ,6 ,6 ,4 ,1 ,
+					   5 ,3 ,2 ,6 ,4 ,0 ,4 ,5 ,2 ,1 ,
+					   5 ,4 ,4 ,4 ,6 ,0 ,3 ,0 ,6 ,3 ,
+					   4 ,3 ,6 ,0 ,1 ,2 ,4 ,2 ,2 ,3 ,5 ,
+					   4 ,3 ,2 ,2 ,3 ,6 ,0 ,6 ,5 ,1 ,6 ,
+					   1 ,1 ,2 ,5 ,2 ,3 ,0 ,1 ,1 ,5 ,4 ,1,
+					   5 ,6 ,3 ,5 ,5 ,3 ,3 ,2 ,5 ,1 ,6 ,6 ,1 ,
+					   5 ,3 ,1 ,2 ,5 ,4 ,4 ,3 ,1 ,4 ,0 ,3 ,3 ,
+					   4 ,0 ,2 ,0 ,0 ,3 ,2 ,2 ,1 ,1 };
 volatile bool shape_O_array[4][4]={{FALSE,  TRUE,  TRUE, FALSE},
 {FALSE,  TRUE,  TRUE, FALSE},
 {FALSE, FALSE, FALSE, FALSE},
@@ -371,7 +379,7 @@ void go_down(){
 	set_shape(current_shape_array);
 }
 void generate_shape(int shape){
-	shape = 2;
+	shape = 0;
 	//	shape = rand()%7;
 	if( shape == 0){
 		for(int i = 0 ; i < 4; i++){
@@ -428,10 +436,6 @@ void generate_shape(int shape){
 int main(void)
 {
 	srand(time(0));
-	int rand_val[100];
-	for(int i = 0; i < 100; i++){
-		rand_val[i] = rand()%7;
-	}
 	DDRA = 0xFF;
 	DDRB = 0xFF;
 	DDRC = 0xFF;
@@ -445,7 +449,7 @@ int main(void)
 		PORTB = get_col(i+8); // lower matrix column
 		i++;
 		if(i > 7) i = 0;
-		_delay_ms(2);
+		_delay_ms(4);
 		if(current_R == 0 && current_C == 2){
 			generate_shape(rand_val[r]);
 			r++; // make sure r doesn't exceed 100 later !!
@@ -462,18 +466,21 @@ int main(void)
 			}
 		}
 		count++;
-		if(count == 25){
+		if(count == 75){
 			go_down();
 			count = 0;
 		}
 		if(!(PIND & (1<<PD3))){
 			go_left();
+			_delay_ms(200);
 		}
 		if(!(PIND & (1<<PD4))){
 			go_right();
+			_delay_ms(200);
 		}
 		if(!(PIND & (1<<PD5))){
 			go_down();
+			_delay_ms(200);
 		}
 		if(!(PIND & (1<<PD6))){
 			rotate_shape(current_shape_array);
@@ -489,11 +496,11 @@ int main(void)
 		}
 		update_score2x();
 		update_score1x();
-		UART_send(11);
-		PORTD |= 1 << PD7 ;
-		_delay_ms(200);
-		PORTD &= ~(1 << PD7);
-		_delay_ms(200);
+		//UART_send(11);
+		//PORTD |= 1 << PD7 ;
+		//_delay_ms(200);
+		//PORTD &= ~(1 << PD7);
+		//_delay_ms(200);
 		
 	}
 }

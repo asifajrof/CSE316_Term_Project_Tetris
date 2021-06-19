@@ -1,5 +1,5 @@
 
-#define F_CPU 8000000
+#define F_CPU 1000000
 #define D4 eS_PORTD4
 #define D5 eS_PORTD5
 #define D6 eS_PORTD6
