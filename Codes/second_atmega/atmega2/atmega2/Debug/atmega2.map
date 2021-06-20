@@ -270,7 +270,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000     0x1072
+.text           0x00000000     0x1076
  *(.vectors)
  .vectors       0x00000000       0x54 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.6.364/gcc/dev/atmega32/avr5/crtatmega32.o
                 0x00000000                __vector_default
@@ -382,32 +382,32 @@ END GROUP
  .text.UART_receive
                 0x0000078e        0x8 main.o
                 0x0000078e                UART_receive
- .text.main     0x00000796      0x34c main.o
+ .text.main     0x00000796      0x350 main.o
                 0x00000796                main
  .text.avr-libc.fplib
-                0x00000ae2       0x7a c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libm.a(floatsisf.o)
-                0x00000ae2                __floatunsisf
-                0x00000ae6                __floatsisf
+                0x00000ae6       0x7a c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libm.a(floatsisf.o)
+                0x00000ae6                __floatunsisf
+                0x00000aea                __floatsisf
  .text.avr-libc
-                0x00000b5c       0x40 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(dtostrf.o)
-                0x00000b5c                dtostrf
+                0x00000b60       0x40 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(dtostrf.o)
+                0x00000b60                dtostrf
  .text.avr-libc
-                0x00000b9c      0x2b4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(dtoa_prf.o)
-                0x00000b9c                dtoa_prf
+                0x00000ba0      0x2b4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(dtoa_prf.o)
+                0x00000ba0                dtoa_prf
  .text.avr-libc
-                0x00000e50      0x1b0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(ftoa_engine.o)
-                0x00000e50                __ftoa_engine
+                0x00000e54      0x1b0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/../../../../avr/lib/avr5\libc.a(ftoa_engine.o)
+                0x00000e54                __ftoa_engine
  .text.libgcc.prologue
-                0x00001000       0x38 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_prologue.o)
-                0x00001000                __prologue_saves__
+                0x00001004       0x38 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_prologue.o)
+                0x00001004                __prologue_saves__
  .text.libgcc.prologue
-                0x00001038       0x36 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_epilogue.o)
-                0x00001038                __epilogue_restores__
-                0x0000106e                . = ALIGN (0x2)
+                0x0000103c       0x36 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_epilogue.o)
+                0x0000103c                __epilogue_restores__
+                0x00001072                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x0000106e        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
-                0x0000106e                _exit
-                0x0000106e                exit
+ .fini9         0x00001072        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
+                0x00001072                _exit
+                0x00001072                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -426,11 +426,11 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x0000106e        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
+ .fini0         0x00001072        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/5.4.0/avr5\libgcc.a(_exit.o)
  *(.fini0)
-                0x00001072                _etext = .
+                0x00001076                _etext = .
 
-.data           0x00800060      0x1e2 load address 0x00001072
+.data           0x00800060      0x1e2 load address 0x00001076
                 0x00800060                PROVIDE (__data_start, .)
  *(.data)
  *(.data*)
@@ -477,8 +477,8 @@ END GROUP
  COMMON         0x00800242       0x40 main.o
                 0x00800242                current_shape_array
                 0x00800282                PROVIDE (__bss_end, .)
-                0x00001072                __data_load_start = LOADADDR (.data)
-                0x00001254                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x00001076                __data_load_start = LOADADDR (.data)
+                0x00001258                __data_load_end = (__data_load_start + SIZEOF (.data))
 
 .noinit         0x00800282        0x0
                 [!provide]                PROVIDE (__noinit_start, .)
@@ -584,9 +584,9 @@ END GROUP
  .debug_str     0x00000196      0x391 main.o
                                 0x3ca (size before relaxing)
 
-.debug_loc      0x00000000     0x168a
+.debug_loc      0x00000000     0x167a
  *(.debug_loc)
- .debug_loc     0x00000000     0x168a main.o
+ .debug_loc     0x00000000     0x167a main.o
 
 .debug_macinfo
  *(.debug_macinfo)

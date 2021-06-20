@@ -218,7 +218,7 @@ int main(void)
 		for(int i=0; i<8; i++){
 			PORTA = ~row[i];
 			PORTB = get_col(i);
-			_delay_us(500);
+			_delay_us(900);
 		}
 		//_delay_us(10);
     }

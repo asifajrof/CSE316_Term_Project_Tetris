@@ -106,6 +106,7 @@ void UART_send(unsigned char data){
 	// wait until UDRE flag is set to logic 1
 	while ((UCSRA & (1<<UDRE)) == 0x00);
 	UDR = data; // Write character to UDR for transmission
+	_delay_ms(4);
 	
 }
 
@@ -379,7 +380,7 @@ void go_down(){
 	set_shape(current_shape_array);
 }
 void generate_shape(int shape){
-	shape = 0;
+	shape = 2;
 	//	shape = rand()%7;
 	if( shape == 0){
 		for(int i = 0 ; i < 4; i++){
@@ -453,8 +454,9 @@ int main(void)
 		_delay_ms(4);
 		if(current_R == 0 && current_C == 2){
 			generate_shape(temp[i]);
-			r++; // make sure r doesn't exceed 100 later !!
-			UART_send(rand_val[r]);
+			//r++; // make sure r doesn't exceed 100 later !!
+			UART_send(2);
+			//if(r > 99 ) r = 0;
 			remove_shape(current_shape_array);
 			if(check_valid(0 , 2 , current_shape_array) == TRUE)
 			set_shape(current_shape_array);
@@ -467,7 +469,7 @@ int main(void)
 			}
 		}
 		count++;
-		if(count == 50){
+		if(count == 40){
 			go_down();
 			count = 0;
 		}
