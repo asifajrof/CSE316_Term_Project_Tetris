@@ -132,13 +132,17 @@ int main(void)
 	char ch1 =' ';
 	int score_update = 0;
     while (1) 
-    {
+    {	
+		int flag = 1;
 		int ch = UART_receive();
 		if(ch == 10){
 			score_update++;
 		}
 		else if(ch == 11){
 			score_update += 4;
+		}
+		else if(ch == 9){
+			flag = 0;
 		}
 		else if(ch == 0){
 			//shape_O
@@ -205,16 +209,27 @@ int main(void)
 		}
 		char score[10];
 		dtostrf(score_update , 0, 2, score);
-		char msg[] = "Score : ";
-		char msg1[15] = "Next piece :   ";
-		msg1[13] = ch1;
-		Lcd4_Set_Cursor(1,1);
-		Lcd4_Write_String(msg);
-		Lcd4_Write_String(score);
-		Lcd4_Set_Cursor(2,1);
-		Lcd4_Write_String(msg1);
+		if(flag == 1){
+			char msg[] = "Score : ";
+			char msg1[15] = "Next piece :   ";
+			msg1[13] = ch1;
+			Lcd4_Set_Cursor(1,1);
+			Lcd4_Write_String(msg);
+			Lcd4_Write_String(score);
+			Lcd4_Set_Cursor(2,1);
+			Lcd4_Write_String(msg1);
+		}
 		
-		
+		else{
+			char msg[] = "Final Score : ";
+			char msg1[15] = "Game Over!    ";
+			Lcd4_Set_Cursor(1,1);
+			Lcd4_Write_String(msg);
+			Lcd4_Write_String(score);
+			Lcd4_Set_Cursor(2,1);
+			Lcd4_Write_String(msg1);
+		}
+			
 		for(int i=0; i<8; i++){
 			PORTA = ~row[i];
 			PORTB = get_col(i);

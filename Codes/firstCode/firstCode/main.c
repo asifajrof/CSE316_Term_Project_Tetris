@@ -79,7 +79,7 @@ bool temp_shape_array[4][4];
 bool current_shape_array[4][4];
 volatile int current_R = 0;
 volatile int current_C = 2;
-
+int current_shape = -1;
 void UART_init(void){
 	
 	int UBBRValue = 25;//AS described before setting baud rate
@@ -376,12 +376,14 @@ void go_down(){
 				current_shape_array[i][j] = FALSE;
 			}
 		}
+		current_shape = -1;
 	}
 	set_shape(current_shape_array);
 }
-void generate_shape(int shape){
-	shape = 2;
-	//	shape = rand()%7;
+void generate_shape(){
+	//int shape = 2;
+	int shape = rand()%7;
+	current_shape = shape;
 	if( shape == 0){
 		for(int i = 0 ; i < 4; i++){
 			for(int j = 0; j < 4; j++){
@@ -442,7 +444,6 @@ int main(void)
 	DDRC = 0xFF;
 	DDRD = 0b10000100 ;
 	int i = 0, count = 0, r = 0;
-	int temp[] = {0, 2, 3, 4, 5, 6};
 	UART_init();
 	while (1)
 	{
@@ -452,14 +453,14 @@ int main(void)
 		i++;
 		if(i > 7) i = 0;
 		_delay_ms(4);
-		if(current_R == 0 && current_C == 2){
-			generate_shape(temp[i]);
-			//r++; // make sure r doesn't exceed 100 later !!
-			UART_send(2);
-			//if(r > 99 ) r = 0;
-			remove_shape(current_shape_array);
-			if(check_valid(0 , 2 , current_shape_array) == TRUE)
-			set_shape(current_shape_array);
+		if(current_R == 0 && current_C == 2 && current_shape == -1){
+			generate_shape();
+			//remove_shape(current_shape_array);
+			if(check_valid(0 , 2 , current_shape_array) == TRUE){
+				UART_send(current_shape);
+				set_shape(current_shape_array);
+				_delay_ms(2);
+			}
 			else{
 				UART_send(9);
 				PORTD |= (1<< PD7);
@@ -469,7 +470,7 @@ int main(void)
 			}
 		}
 		count++;
-		if(count == 40){
+		if(count == 20){
 			go_down();
 			count = 0;
 		}
