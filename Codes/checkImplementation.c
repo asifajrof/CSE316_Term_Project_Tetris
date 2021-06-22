@@ -1,10 +1,7 @@
-#define F_CPU 1000000
-#include <avr/io.h>
-#include <util/delay.h>
 #include <stdlib.h>
-#include <time.h>
+#include<time.h>
 
-typedef uint8_t bool;
+typedef int bool;
 #define FALSE 0x00
 #define TRUE 0xFF
 #define UP -1
@@ -13,7 +10,7 @@ typedef uint8_t bool;
 #define RIGHT 1
 typedef enum { O, I, L, J, S, Z,  T } shape_type;
 
-volatile char row[] = {1, 2, 4, 8, 16, 32, 64, 128};
+char row[] = {1, 2, 4, 8, 16, 32, 64, 128};
 int rand_val[100] =   {6 ,1 ,3 ,4 ,0 ,4 ,6 ,6 ,4 ,1 ,
 					   5 ,3 ,2 ,6 ,4 ,0 ,4 ,5 ,2 ,1 ,
 					   5 ,4 ,4 ,4 ,6 ,0 ,3 ,0 ,6 ,3 ,
@@ -23,42 +20,42 @@ int rand_val[100] =   {6 ,1 ,3 ,4 ,0 ,4 ,6 ,6 ,4 ,1 ,
 					   5 ,6 ,3 ,5 ,5 ,3 ,3 ,2 ,5 ,1 ,6 ,6 ,1 ,
 					   5 ,3 ,1 ,2 ,5 ,4 ,4 ,3 ,1 ,4 ,0 ,3 ,3 ,
 					   4 ,0 ,2 ,0 ,0 ,3 ,2 ,2 ,1 ,1 };
-volatile bool shape_O_array[4][4]={{FALSE,  TRUE,  TRUE, FALSE},
+bool shape_O_array[4][4]={{FALSE,  TRUE,  TRUE, FALSE},
 {FALSE,  TRUE,  TRUE, FALSE},
 {FALSE, FALSE, FALSE, FALSE},
 {FALSE, FALSE, FALSE, FALSE}};
 
-volatile bool shape_I_array[4][4]={{FALSE,  TRUE, FALSE, FALSE},
+bool shape_I_array[4][4]={{FALSE,  TRUE, FALSE, FALSE},
 {FALSE,  TRUE, FALSE, FALSE},
 {FALSE,  TRUE, FALSE, FALSE},
 {FALSE,  TRUE, FALSE, FALSE}};
 
-volatile bool shape_L_array[4][4]={{FALSE,  TRUE, FALSE, FALSE},
+bool shape_L_array[4][4]={{FALSE,  TRUE, FALSE, FALSE},
 {FALSE,  TRUE, FALSE, FALSE},
 {FALSE,  TRUE,  TRUE, FALSE},
 {FALSE, FALSE, FALSE, FALSE}};
 
-volatile bool shape_J_array[4][4]={{FALSE, FALSE,  TRUE, FALSE},
+bool shape_J_array[4][4]={{FALSE, FALSE,  TRUE, FALSE},
 {FALSE, FALSE,  TRUE, FALSE},
 {FALSE,  TRUE,  TRUE, FALSE},
 {FALSE, FALSE, FALSE, FALSE}};
 
-volatile bool shape_S_array[4][4]={{FALSE,  TRUE,  TRUE, FALSE},
+bool shape_S_array[4][4]={{FALSE,  TRUE,  TRUE, FALSE},
 { TRUE,  TRUE, FALSE, FALSE},
 {FALSE, FALSE, FALSE, FALSE},
 {FALSE, FALSE, FALSE, FALSE}};
 
-volatile bool shape_Z_array[4][4]={{ TRUE,  TRUE, FALSE, FALSE},
+bool shape_Z_array[4][4]={{ TRUE,  TRUE, FALSE, FALSE},
 {FALSE,  TRUE,  TRUE, FALSE},
 {FALSE, FALSE, FALSE, FALSE},
 {FALSE, FALSE, FALSE, FALSE}};
 
-volatile bool shape_T_array[4][4]={{ TRUE,  TRUE,  TRUE, FALSE},
+bool shape_T_array[4][4]={{ TRUE,  TRUE,  TRUE, FALSE},
 {FALSE,  TRUE, FALSE, FALSE},
 {FALSE, FALSE, FALSE, FALSE},
 {FALSE, FALSE, FALSE, FALSE}};
 
-volatile bool current_display[16][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+bool current_display[16][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
@@ -77,39 +74,9 @@ volatile bool current_display[16][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,
 
 bool temp_shape_array[4][4];
 bool current_shape_array[4][4];
-volatile int current_R = 0;
-volatile int current_C = 2;
+int current_R = 0;
+int current_C = 2;
 int current_shape = -1;
-void UART_init(void){
-	
-	int UBBRValue = 25;//AS described before setting baud rate
-
-	//Put the upper part of the baud number here (bits 8 to 11)
-
-	UBRRH = (unsigned char) (UBBRValue >> 8);
-
-	//Put the remaining part of the baud number here
-
-	UBRRL = (unsigned char) UBBRValue;
-
-	//Enable the receiver and transmitter
-
-	UCSRB = (1 << TXEN);
-
-	//Set 2 stop bits and data bit length is 8-bit
-
-	//UCSRC = (1 << USBS) | (3 << UCSZ0);
-	UCSRC = 0b10001110;
-}
-
-void UART_send(unsigned char data){
-	// wait until UDRE flag is set to logic 1
-	while ((UCSRA & (1<<UDRE)) == 0x00);
-	UDR = data; // Write character to UDR for transmission
-	_delay_ms(4);
-	
-}
-
 
 void row_shift(int length, bool shape_array[][4], int direction, int shift_count)	//no wrap around
 {
@@ -169,7 +136,7 @@ void align_top_left_justify(bool shape_array[][4])
 		}
 	}
 	row_shift(4, shape_array,shift_direction,shift_count);
-	
+
 	//left justify
 	int width = 0;
 	int w1 = -1, w2 = -1;
@@ -209,19 +176,19 @@ void rotate_shape(bool shape_array[][4])
 	//rotate clockwise.
 	//transpose, mirror.
 	bool temp[4][4];
-	
+
 	for (int i=0; i<4; i++){
 		for (int j=0; j<4; j++){
 			temp[i][j] = shape_array[i][j];	//copy
 		}
 	}
-	
+
 	for (int i=0; i<4; i++){
 		for (int j=0; j<4; j++){
 			temp_shape_array[i][j] = temp[j][i];	//transpose
 		}
 	}
-	
+
 	for (int i=0; i<4; i++){
 		for (int j=0; j<4; j++){
 			temp[i][j] = temp_shape_array[i][j];
@@ -300,7 +267,7 @@ void remove_row(int row){
 	//shift rows downwards from row to 1
 	for(int i = row ; i > 0 ; i--){
 		for(int j = 0 ; j< 8; j++){
-			current_display[i][j] = current_display[i-1][j];
+			current_display[row][j] = current_display[row-1][j];
 		}
 	}
 	//put false in row 0
@@ -309,24 +276,19 @@ void remove_row(int row){
 	}
 }
 void update_score1x(){
-	uint8_t temp ;
+	int temp ;
 	for(int i = 0 ; i < 16 ; i++){
 		temp = TRUE;
 		for(int j = 0 ; j < 8; j++){
 			temp &= current_display[i][j];
 		}
 		if(temp == TRUE){
-			UART_send(10);
-			PORTD |= 1 << PD7 ;
-			_delay_ms(200);
-			PORTD &= ~(1 << PD7);
-			_delay_ms(200);
 			remove_row(i);
 		}
 	}
 }
 void update_score2x(){
-	uint8_t temp ;
+	int temp ;
 	for(int i = 0 ; i < 12 ; i++){
 		temp = TRUE;
 		int ii = i;
@@ -337,11 +299,6 @@ void update_score2x(){
 			ii++;
 		}
 		if(temp == TRUE){
-			UART_send(11);
-			PORTD |= 1 << PD7 ;
-			_delay_ms(200);
-			PORTD &= ~(1 << PD7);
-			_delay_ms(200);
 			for(int t = 0; t < 4; t++){
 				remove_row(i);
 			}
@@ -350,23 +307,32 @@ void update_score2x(){
 }
 void go_left(){
 	remove_shape(current_shape_array);
-	if(check_valid(current_R, current_C-1 , current_shape_array) == TRUE){
+	if(current_shape == -1){
+        return;
+	}
+	else if(check_valid(current_R, current_C-1 , current_shape_array) == TRUE){
 		current_C--;
 	}
 	set_shape(current_shape_array);
 }
 void go_right(){
 	remove_shape(current_shape_array);
-	if(check_valid(current_R, current_C+1 , current_shape_array) == TRUE){
+	if(current_shape == -1){
+        return;
+	}
+	else if(check_valid(current_R, current_C+1 , current_shape_array) == TRUE){
 		current_C++;
 	}
 	set_shape(current_shape_array);
 }
 void go_down(){
+    //printf("%d %d \n", current_R ,current_C);
 	remove_shape(current_shape_array);
-	if(check_valid(current_R+1, current_C , current_shape_array) == TRUE){
+	if(current_shape == -1){
+        return;
+	}
+    else if(check_valid(current_R+1, current_C , current_shape_array) == TRUE){
 		current_R++;
-		set_shape(current_shape_array);
 	}
 	else{
 		set_shape(current_shape_array);
@@ -378,14 +344,14 @@ void go_down(){
 			}
 		}
 		current_shape = -1;
-		update_score2x();
-		update_score1x();
 	}
+	set_shape(current_shape_array);
 }
 void generate_shape(){
-	//int shape = 0;
-	int shape = rand()%7;
-	current_shape = shape;
+    //int shape = 0;
+    int shape = rand()%7;
+    current_shape = shape;
+	//printf("Shape : %d\n", shape);
 	if( shape == 0){
 		for(int i = 0 ; i < 4; i++){
 			for(int j = 0; j < 4; j++){
@@ -437,59 +403,52 @@ void generate_shape(){
 	}
 }
 
-
+void printMatrix(){
+    for(int i = 0 ; i < 16; i++){
+        for(int j = 0; j < 8; j++){
+            if(current_display[i][j]== TRUE){
+                printf("1  ");
+            }
+            else printf("0  ");
+        }
+        printf("\n");
+    }
+}
+void check_over(){
+    for(int i = 0; i < 8; i++){
+        if(current_display[0][i] == TRUE){
+            return 1;
+        }
+    }
+    return 0;
+}
 int main(void)
 {
-	srand(time(NULL));
-	DDRA = 0xFF;
-	DDRB = 0xFF;
-	DDRC = 0xFF;
-	DDRD = 0b10000100 ;
-	int i = 0, count = 0; 
-	//r = 0;
-	UART_init();
-	while (1)
-	{
-		PORTC = ~row[i]; // common row connection
-		PORTA = get_col(i); // upper matrix column
-		PORTB = get_col(i+8); // lower matrix column
-		i++;
-		if(i > 7) i = 0;
-		_delay_ms(4);
-		if(current_R == 0 && current_C == 2 && current_shape == -1){
+	srand(time(0));
+	int i = 0;
+	while (1){
+        if(current_R == 0 && current_C == 2){
 			generate_shape();
-			//remove_shape(current_shape_array);
-			if(check_valid(0 , 2 , current_shape_array) == TRUE){
-				UART_send(current_shape);
-				set_shape(current_shape_array);
-				_delay_ms(2);
-			}
+			if(check_valid(0 , 2 , current_shape_array) == TRUE)
+                set_shape(current_shape_array);
 			else{
-				UART_send(9);
-				PORTD |= (1<< PD7);
-				_delay_ms(200);
-				PORTD &= ~(1<< PD7);
-				_delay_ms(200);
+				printf("Game Over!");
+				return 0;
 			}
 		}
-		count++;
-		if(count == 75){
-			go_down();
-			count = 0;
-		}
-		if(!(PIND & (1<<PD3))){
+		if(i == 1){
 			go_left();
-			_delay_ms(200);
+			//_delay_ms(200);
 		}
-		if(!(PIND & (1<<PD4))){
+		if(i == 2){
 			go_right();
-			_delay_ms(200);
+			//_delay_ms(200);
 		}
-		if(!(PIND & (1<<PD5))){
+		if(i == 3){
 			go_down();
-			_delay_ms(200);
+			//_delay_ms(200);
 		}
-		if(!(PIND & (1<<PD6))){
+		if(i == 4){
 			rotate_shape(current_shape_array);
 			remove_shape(current_shape_array);
 			if(check_valid(current_R, current_C, temp_shape_array) == TRUE){
@@ -501,14 +460,12 @@ int main(void)
 			}
 			set_shape(current_shape_array);
 		}
-		//update_score2x();
-		//update_score1x();
-		//UART_send(11);
-		//PORTD |= 1 << PD7 ;
-		//_delay_ms(200);
-		//PORTD &= ~(1 << PD7);
-		//_delay_ms(200);
-		
+		update_score2x();
+		update_score1x();
+		printMatrix();
+        go_down();
+        scanf("%d", &i);
 	}
 }
+
 

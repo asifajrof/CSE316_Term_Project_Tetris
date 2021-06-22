@@ -139,7 +139,7 @@ int main(void)
 			score_update++;
 		}
 		else if(ch == 11){
-			score_update += 4;
+			score_update += 8;
 		}
 		else if(ch == 9){
 			flag = 0;
@@ -229,12 +229,14 @@ int main(void)
 			Lcd4_Set_Cursor(2,1);
 			Lcd4_Write_String(msg1);
 		}
-			
-		for(int i=0; i<8; i++){
-			PORTA = ~row[i];
-			PORTB = get_col(i);
-			_delay_us(900);
-		}
+		
+		for(int t = 0 ; t < 500; t++){
+			for(int i=0; i<8; i++){
+				PORTA = ~row[i];
+				PORTB = get_col(i);
+			}
+		}	
+		
 		//_delay_us(10);
     }
 }
