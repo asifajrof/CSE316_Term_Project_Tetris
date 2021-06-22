@@ -366,6 +366,7 @@ void go_down(){
 	remove_shape(current_shape_array);
 	if(check_valid(current_R+1, current_C , current_shape_array) == TRUE){
 		current_R++;
+		set_shape(current_shape_array);
 	}
 	else{
 		set_shape(current_shape_array);
@@ -377,12 +378,13 @@ void go_down(){
 			}
 		}
 		current_shape = -1;
+		update_score2x();
+		update_score1x();
 	}
-	set_shape(current_shape_array);
 }
 void generate_shape(){
-	//int shape = 2;
-	int shape = rand()%7;
+	int shape = 0;
+	//int shape = rand()%7;
 	current_shape = shape;
 	if( shape == 0){
 		for(int i = 0 ; i < 4; i++){
@@ -443,7 +445,8 @@ int main(void)
 	DDRB = 0xFF;
 	DDRC = 0xFF;
 	DDRD = 0b10000100 ;
-	int i = 0, count = 0, r = 0;
+	int i = 0, count = 0; 
+	//r = 0;
 	UART_init();
 	while (1)
 	{
@@ -470,7 +473,7 @@ int main(void)
 			}
 		}
 		count++;
-		if(count == 20){
+		if(count == 40){
 			go_down();
 			count = 0;
 		}
@@ -498,8 +501,8 @@ int main(void)
 			}
 			set_shape(current_shape_array);
 		}
-		update_score2x();
-		update_score1x();
+		//update_score2x();
+		//update_score1x();
 		//UART_send(11);
 		//PORTD |= 1 << PD7 ;
 		//_delay_ms(200);
