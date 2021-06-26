@@ -316,8 +316,8 @@ void update_score1x(){
 			temp &= current_display[i][j];
 		}
 		if(temp == TRUE){
-			/*
 			UART_send(10);
+			/*
 			PORTD |= 1 << PD7 ;
 			_delay_ms(200);
 			PORTD &= ~(1 << PD7);
@@ -339,8 +339,8 @@ void update_score2x(){
 			ii++;
 		}
 		if(temp == TRUE){
-			/*
 			UART_send(11);
+			/*
 			PORTD |= 1 << PD7 ;
 			_delay_ms(200);
 			PORTD &= ~(1 << PD7);
@@ -387,8 +387,8 @@ void go_down(){
 	}
 }
 void generate_shape(){
-	//int shape = 0;
-	int shape = rand()%7;
+	int shape = 0;
+	//int shape = rand()%7;
 	current_shape = shape;
 	if( shape == 0){
 		for(int i = 0 ; i < 4; i++){
@@ -441,6 +441,13 @@ void generate_shape(){
 	}
 }
 
+void start_again(){
+	for(int i = 0; i < 16; i++){
+		for(int j = 0; j < 8; j++){
+			current_display[i][j] = FALSE;
+		}
+	}
+}
 
 int main(void)
 {
@@ -451,38 +458,42 @@ int main(void)
 	DDRB = 0xFF;
 	DDRC = 0xFF;
 	DDRD = 0b10000100 ;
-	int i = 0, count = 0;
+	int i = 7, count = 0;
 	//r = 0;
-	//UART_init();
+	UART_init();
 	while (1)
 	{
-		PORTC = ~row[i]; // common row connection
-		PORTB = get_col(i); // upper matrix column
-		PORTA = get_col(i+8); // lower matrix column
-		i++;
-		if(i > 7) i = 0;
-		_delay_ms(4);
+		PORTC = row[i]; // common row connection
+		PORTB = ~get_col(i); // upper matrix column
+		PORTA = ~get_col(i+8); // lower matrix column
+		if(i == 7) i = 0;
+		else i++;
+		_delay_us(1500);
 		if(current_R == 0 && current_C == 2 && current_shape == -1){
 			generate_shape();
 			//remove_shape(current_shape_array);
 			if(check_valid(0 , 2 , current_shape_array) == TRUE){
-				//UART_send(current_shape);
+				UART_send(current_shape);
 				set_shape(current_shape_array);
-				_delay_ms(2);
+				//_delay_ms(2);
 			}
-			else{/*
+			else{
 				UART_send(9);
+				/*
 				PORTD |= (1<< PD7);
 				_delay_ms(200);
 				PORTD &= ~(1<< PD7);
 				_delay_ms(200);
 				*/
+				start_again();
+				_delay_ms(1000);
 			}
 		}
 		count++;
-		if(count == 75){
+		if(count == 150){
 			go_down();
 			count = 0;
+			//_delay_ms(5);
 		}
 		
 		if(!(PIND & (1<<PD3))){
