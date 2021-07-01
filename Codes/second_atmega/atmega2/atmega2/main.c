@@ -135,17 +135,7 @@ int main(void)
 	int score_update = 0;
     while (1) 
     {
-		char score[10];
-		dtostrf(score_update , 0, 2, score);
-		char msg[] = "Score : ";
-		char msg1[] = "Next piece :   ";
-		msg1[13] = ch1;
-		Lcd4_Set_Cursor(1,1);
-		Lcd4_Write_String(msg);
-		Lcd4_Write_String(score);
-		Lcd4_Set_Cursor(2,1);
-		Lcd4_Write_String(msg1);
-			
+		
 		int flag = 1;
 	    int ch = UART_receive();
 		if(ch == 10){
@@ -220,12 +210,12 @@ int main(void)
 			}
 			ch1 = 'T';
 		}
-		//score[10];
+		char score[10];	
 		dtostrf(score_update , 0, 2, score);
 		if(flag == 1 ){
 			//Lcd4_Clear();
-			//char msg[] = "Score : ";
-			//char msg1[] = "Next piece :   ";
+			char msg[] = "Score : ";
+			char msg1[] = "Next piece :   ";
 			msg1[13] = ch1;
 			Lcd4_Set_Cursor(1,1);
 			Lcd4_Write_String(msg);
@@ -236,8 +226,8 @@ int main(void)
 		
 		else{
 			//Lcd4_Clear();
-			//char msg[] = "Final Score : ";
-			//char msg1[] = "Game Over!    ";
+			char msg[] = "Final Score : ";
+			char msg1[] = "Game Over!    ";
 			Lcd4_Set_Cursor(1,1);
 			Lcd4_Write_String(msg);
 			Lcd4_Write_String(score);

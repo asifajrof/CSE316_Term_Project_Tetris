@@ -3,7 +3,15 @@
 #include <util/delay.h>
 #include <stdlib.h>
 #include <time.h>
-
+#define D4 eS_PORTD4
+#define D5 eS_PORTD5
+#define D6 eS_PORTD6
+#define D7 eS_PORTD7
+#define RS eS_PORTC6
+#define EN eS_PORTC7
+#include "lcd.h"
+#include <float.h>
+#include<stdlib.h>
 typedef uint8_t bool;
 #define FALSE 0x00
 #define TRUE 0xFF
@@ -13,7 +21,7 @@ typedef uint8_t bool;
 #define RIGHT 1
 typedef enum { O, I, L, J, S, Z,  T } shape_type;
 
-volatile char row[] = {1, 2, 4, 8, 16, 32, 64, 128};
+volatile char row[] = {0b11011000, 0b11011001, 0b11011010, 0b11011011, 0b11011100, 0b11011101, 0b11011110, 0b11011111};
 int rand_val[100] =   {6 ,1 ,3 ,4 ,0 ,4 ,6 ,6 ,4 ,1 ,
 					   5 ,3 ,2 ,6 ,4 ,0 ,4 ,5 ,2 ,1 ,
 					   5 ,4 ,4 ,4 ,6 ,0 ,3 ,0 ,6 ,3 ,
@@ -80,36 +88,7 @@ bool current_shape_array[4][4];
 volatile int current_R = 0;
 volatile int current_C = 2;
 int current_shape = -1;
-void UART_init(void){
-	
-	int UBBRValue = 25;//AS described before setting baud rate
-
-	//Put the upper part of the baud number here (bits 8 to 11)
-
-	UBRRH = (unsigned char) (UBBRValue >> 8);
-
-	//Put the remaining part of the baud number here
-
-	UBRRL = (unsigned char) UBBRValue;
-
-	//Enable the receiver and transmitter
-
-	UCSRB = (1 << TXEN);
-
-	//Set 2 stop bits and data bit length is 8-bit
-
-	//UCSRC = (1 << USBS) | (3 << UCSZ0);
-	UCSRC = 0b10001110;
-}
-
-void UART_send(unsigned char data){
-	// wait until UDRE flag is set to logic 1
-	while ((UCSRA & (1<<UDRE)) == 0x00);
-	UDR = data; // Write character to UDR for transmission
-	_delay_ms(4);
-	
-}
-
+int score_update = 0;
 
 void row_shift(int length, bool shape_array[][4], int direction, int shift_count)	//no wrap around
 {
@@ -308,6 +287,14 @@ void remove_row(int row){
 		current_display[0][i] = FALSE;
 	}
 }
+void showScore(){
+	char score[10];
+	dtostrf(score_update , 0, 2, score);
+	char msg[] = "Score : ";
+	Lcd4_Set_Cursor(1,1);
+	Lcd4_Write_String(msg);
+	Lcd4_Write_String(score);
+}
 void update_score1x(){
 	uint8_t temp ;
 	for(int i = 0 ; i < 16 ; i++){
@@ -316,12 +303,14 @@ void update_score1x(){
 			temp &= current_display[i][j];
 		}
 		if(temp == TRUE){
-			UART_send(10);
-			PORTD |= 1 << PD7 ;
+			//UART_send(10);
+			score_update++;
+			PORTC |= (1<< PC5);
 			_delay_ms(200);
-			PORTD &= ~(1 << PD7);
+			PORTC &= ~(1<< PC5);
 			_delay_ms(200);
 			remove_row(i);
+			showScore();
 		}
 	}
 }
@@ -337,14 +326,16 @@ void update_score2x(){
 			ii++;
 		}
 		if(temp == TRUE){
-			UART_send(11);
-			PORTD |= 1 << PD7 ;
+			//UART_send(11);
+			score_update += 8;
+			PORTC |= (1<< PC5);
 			_delay_ms(200);
-			PORTD &= ~(1 << PD7);
+			PORTC &= ~(1<< PC5);
 			_delay_ms(200);
 			for(int t = 0; t < 4; t++){
 				remove_row(i);
 			}
+			showScore();
 		}
 	}
 }
@@ -444,6 +435,15 @@ void start_again(){
 		}
 	}
 }
+
+
+
+void showNextPiece(int x){
+	char msg1[] = "Next piece :   ";
+	//msg1[13] = ;
+	Lcd4_Set_Cursor(2,1);
+	Lcd4_Write_String(msg1);
+}
 int main(void)
 {
 	MCUCSR |= 1<<JTD;
@@ -452,53 +452,55 @@ int main(void)
 	DDRA = 0xFF;
 	DDRB = 0xFF;
 	DDRC = 0xFF;
-	DDRD = 0b10000100 ;
+	DDRD = 0b11110000 ;
+	Lcd4_Init();
 	int i = 0, count = 0; 
 	//r = 0;
-	UART_init();
+	//UART_init();
 	while (1)
 	{
-		PORTC = ~row[i]; // common row connection
+		PORTC = row[i]; // common row connection
 		PORTA = get_col(i); // upper matrix column
 		PORTB = get_col(i+8); // lower matrix column
 		i++;
 		if(i > 7) i = 0;
-		_delay_ms(4);
+		//_delay_ms(4);
 		if(current_R == 0 && current_C == 2 && current_shape == -1){
 			generate_shape();
 			if(check_valid(0 , 2 , current_shape_array) == TRUE){
-				UART_send(current_shape);
+			//	UART_send(current_shape);
+				showNextPiece(current_shape);
 				set_shape(current_shape_array);
-				_delay_ms(2);
+				//_delay_ms(2);
 			}
 			else{
-				UART_send(9);
-				PORTD |= (1<< PD7);
+				//UART_send(9);
+				PORTC |= (1<< PC5);
 				_delay_ms(200);
-				PORTD &= ~(1<< PD7);
+				PORTC &= ~(1<< PC5);
 				_delay_ms(200);
 				start_again();
 				_delay_ms(1000);
 			}
 		}
 		count++;
-		if(count == 75){
+		if(count == 25){
 			go_down();
 			count = 0;
 		}
-		if(!(PIND & (1<<PD3))){
+		if(!(PIND & (1<<PD0))){
 			go_left();
 			_delay_ms(200);
 		}
-		if(!(PIND & (1<<PD4))){
+		if(!(PIND & (1<<PD1))){
 			go_right();
 			_delay_ms(200);
 		}
-		if(!(PIND & (1<<PD5))){
+		if(!(PIND & (1<<PD2))){
 			go_down();
 			_delay_ms(200);
 		}
-		if(!(PIND & (1<<PD6))){
+		if(!(PIND & (1<<PD3))){
 			rotate_shape(current_shape_array);
 			remove_shape(current_shape_array);
 			if(check_valid(current_R, current_C, temp_shape_array) == TRUE){
@@ -510,6 +512,7 @@ int main(void)
 			}
 			set_shape(current_shape_array);
 		}
+		showScore();
 	}
 }
 
