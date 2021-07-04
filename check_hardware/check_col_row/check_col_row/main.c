@@ -14,7 +14,7 @@ typedef uint8_t bool;
 typedef enum { O, I, L, J, S, Z,  T } shape_type;
 
 volatile char row[] = {1, 2, 4, 8, 16, 32, 64, 128};
-int rand_val[100] =   {6 ,1 ,3 ,4 ,0 ,4 ,6 ,6 ,4 ,1 ,
+int rand_val[100] =   {0 ,2 ,2 ,0 ,0 ,2 ,2 ,6 ,4 ,1 ,
 	5 ,3 ,2 ,6 ,4 ,0 ,4 ,5 ,2 ,1 ,
 	5 ,4 ,4 ,4 ,6 ,0 ,3 ,0 ,6 ,3 ,
 	4 ,3 ,6 ,0 ,1 ,2 ,4 ,2 ,2 ,3 ,5 ,
@@ -386,9 +386,9 @@ void go_down(){
 		update_score1x();
 	}
 }
-void generate_shape(){
+void generate_shape(int shape){
 	//int shape = 0;
-	int shape = rand()%7;
+	//int shape = rand()%7;
 	current_shape = shape;
 	if( shape == 0){
 		for(int i = 0 ; i < 4; i++){
@@ -441,12 +441,17 @@ void generate_shape(){
 	}
 }
 
+int count_speed = 175;
+int count_count = 0;
+
 void start_again(){
 	for(int i = 0; i < 16; i++){
 		for(int j = 0; j < 8; j++){
 			current_display[i][j] = FALSE;
 		}
 	}
+	count_speed = 175;
+	count_count = 0;
 }
 
 int main(void)
@@ -458,8 +463,7 @@ int main(void)
 	DDRB = 0xFF;
 	DDRC = 0xFF;
 	DDRD = 0b10000100 ;
-	int i = 7, count = 0;
-	//r = 0;
+	int i = 7, count = 0,r = 0;
 	UART_init();
 	while (1)
 	{
@@ -474,7 +478,9 @@ int main(void)
 		else i++;
 		//_delay_us(1500);
 		if(current_R == 0 && current_C == 2 && current_shape == -1){
-			generate_shape();
+			generate_shape(rand_val[r]);
+			r++;
+			if(r == 100) r = 0;
 			//remove_shape(current_shape_array);
 			if(check_valid(0 , 2 , current_shape_array) == TRUE){
 				UART_send(current_shape);
@@ -494,9 +500,15 @@ int main(void)
 			}
 		}
 		count++;
-		if(count == 100){
+		if(count == count_speed){
 			go_down();
+			count_count++;
 			count = 0;
+			if(count_count == 50){
+				count_count = 0;
+				if(count_speed >=100)
+					count_speed -= 50;
+			}
 			_delay_ms(5);
 		}
 		
