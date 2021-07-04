@@ -387,8 +387,8 @@ void go_down(){
 	}
 }
 void generate_shape(){
-	int shape = 0;
-	//int shape = rand()%7;
+	//int shape = 0;
+	int shape = rand()%7;
 	current_shape = shape;
 	if( shape == 0){
 		for(int i = 0 ; i < 4; i++){
@@ -463,12 +463,16 @@ int main(void)
 	UART_init();
 	while (1)
 	{
-		PORTC = row[i]; // common row connection
+		PORTC = 0x00; // common row connection
+		PORTC |= row[i]; // common row connection
 		PORTB = ~get_col(i); // upper matrix column
 		PORTA = ~get_col(i+8); // lower matrix column
+		_delay_ms(2);
+		PORTB = ~0x0; // upper matrix column
+		PORTA = ~0x0; // lower matrix column
 		if(i == 7) i = 0;
 		else i++;
-		_delay_us(1500);
+		//_delay_us(1500);
 		if(current_R == 0 && current_C == 2 && current_shape == -1){
 			generate_shape();
 			//remove_shape(current_shape_array);
@@ -479,21 +483,21 @@ int main(void)
 			}
 			else{
 				UART_send(9);
-				/*
+				
 				PORTD |= (1<< PD7);
 				_delay_ms(200);
 				PORTD &= ~(1<< PD7);
 				_delay_ms(200);
-				*/
+				
 				start_again();
 				_delay_ms(1000);
 			}
 		}
 		count++;
-		if(count == 150){
+		if(count == 100){
 			go_down();
 			count = 0;
-			//_delay_ms(5);
+			_delay_ms(5);
 		}
 		
 		if(!(PIND & (1<<PD3))){
@@ -507,7 +511,8 @@ int main(void)
 		}
 		if(!(PIND & (1<<PD5))){
 			go_down();
-			_delay_ms(200);
+			//go_down();
+			_delay_ms(100);
 		}
 		if(!(PIND & (1<<PD6))){
 			rotate_shape(current_shape_array);
@@ -520,6 +525,7 @@ int main(void)
 				}
 			}
 			set_shape(current_shape_array);
+			_delay_ms(250);
 		}
 		
 		//update_score2x();
