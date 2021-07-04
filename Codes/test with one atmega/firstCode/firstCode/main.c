@@ -435,7 +435,16 @@ void start_again(){
 		}
 	}
 }
-
+void printScreen() {
+	for(int j = 0; j < 100; j++){
+		for(int i = 0; i < 8; i++){
+			PORTC = row[i]; // common row connection
+			PORTA = get_col(i); // upper matrix column
+			PORTB = get_col(i+8); // lower matrix column
+		}
+	}
+	
+}
 
 
 void showNextPiece(int x){
@@ -459,22 +468,25 @@ int main(void)
 	//UART_init();
 	while (1)
 	{
-		PORTC = row[i]; // common row connection
+	/*	PORTC = row[i]; // common row connection
 		PORTA = get_col(i); // upper matrix column
 		PORTB = get_col(i+8); // lower matrix column
 		i++;
-		if(i > 7) i = 0;
+		if(i > 7) i = 0;*/
 		//_delay_ms(4);
+		printScreen();
 		if(current_R == 0 && current_C == 2 && current_shape == -1){
 			generate_shape();
 			if(check_valid(0 , 2 , current_shape_array) == TRUE){
 			//	UART_send(current_shape);
 				showNextPiece(current_shape);
 				set_shape(current_shape_array);
+				printScreen();
 				//_delay_ms(2);
 			}
 			else{
 				//UART_send(9);
+				printScreen();
 				PORTC |= (1<< PC5);
 				_delay_ms(200);
 				PORTC &= ~(1<< PC5);
@@ -487,18 +499,22 @@ int main(void)
 		if(count == 25){
 			go_down();
 			count = 0;
+			printScreen();
 		}
 		if(!(PIND & (1<<PD0))){
 			go_left();
 			_delay_ms(200);
+			printScreen();
 		}
 		if(!(PIND & (1<<PD1))){
 			go_right();
 			_delay_ms(200);
+			printScreen();
 		}
 		if(!(PIND & (1<<PD2))){
 			go_down();
 			_delay_ms(200);
+			printScreen();
 		}
 		if(!(PIND & (1<<PD3))){
 			rotate_shape(current_shape_array);
@@ -511,6 +527,7 @@ int main(void)
 				}
 			}
 			set_shape(current_shape_array);
+			printScreen();
 		}
 		showScore();
 	}
