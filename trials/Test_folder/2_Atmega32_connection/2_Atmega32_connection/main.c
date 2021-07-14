@@ -17,7 +17,7 @@ void UART_init(void){
 
 	//Enable the receiver and transmitter
 
-	UCSRB = (1 << TXEN);
+	UCSRB = (1 << TXEN)|(1 << RXEN);
 
 	//Set 2 stop bits and data bit length is 8-bit
 
@@ -39,13 +39,18 @@ int main(void)
 	while (1)
 
 	{
+		PORTD = 0x00;
 		
-		if ((PINC&(1<<PINC0))){
+		if ((PINC&(1<<PC0))){
 
 			UART_send(ch);
 			ch++;
 			if(ch == '8') ch = '0';
+			PORTD |= 0b00000010;
+			_delay_ms(2000);
+			PORTD = 0x00;
+			
 		}
-		PORTD |= 0b11111110;
+		
 	}
 }

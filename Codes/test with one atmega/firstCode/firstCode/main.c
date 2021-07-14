@@ -487,11 +487,11 @@ int main(void)
 			else{
 				//UART_send(9);
 				printScreen();
-				PORTC |= (1<< PC5);
+			/*	PORTC |= (1<< PC5);
 				_delay_ms(200);
 				PORTC &= ~(1<< PC5);
 				_delay_ms(200);
-				start_again();
+				start_again();*/
 				_delay_ms(1000);
 			}
 		}
@@ -501,7 +501,7 @@ int main(void)
 			count = 0;
 			printScreen();
 		}
-		if(!(PIND & (1<<PD0))){
+	/*	if(!(PIND & (1<<PD0))){
 			go_left();
 			_delay_ms(200);
 			printScreen();
@@ -528,7 +528,7 @@ int main(void)
 			}
 			set_shape(current_shape_array);
 			printScreen();
-		}
+		}*/
 		showScore();
 	}
 }
