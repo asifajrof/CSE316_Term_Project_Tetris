@@ -24,12 +24,11 @@ unsigned char USART_Receive(){
 int main(void)
 {
 	DDRC = 0xFF;
-	DDRD &= 0b11111100;
+	DDRD = 0b11111100;
 	UART_init(MYUBRR);
 	
 	while (1)
 	{
-		PORTD |= (1<< PD3);
 		char ch = USART_Receive();
 		if(ch == '0'){
 			PORTC = 0x00;

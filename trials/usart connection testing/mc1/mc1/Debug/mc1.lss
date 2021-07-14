@@ -3,29 +3,29 @@ mc1.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         000000ca  00000000  00000000  00000054  2**1
+  0 .text         000000c6  00000000  00000000  00000054  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         00000000  00800060  00800060  0000011e  2**0
+  1 .data         00000000  00800060  00800060  0000011a  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .comment      00000030  00000000  00000000  0000011e  2**0
+  2 .comment      00000030  00000000  00000000  0000011a  2**0
                   CONTENTS, READONLY
-  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000150  2**2
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  0000014c  2**2
                   CONTENTS, READONLY
-  4 .debug_aranges 00000030  00000000  00000000  0000018c  2**0
+  4 .debug_aranges 00000030  00000000  00000000  00000188  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_info   00000689  00000000  00000000  000001bc  2**0
+  5 .debug_info   00000689  00000000  00000000  000001b8  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 000005bf  00000000  00000000  00000845  2**0
+  6 .debug_abbrev 000005bf  00000000  00000000  00000841  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   000002ad  00000000  00000000  00000e04  2**0
+  7 .debug_line   000002a7  00000000  00000000  00000e00  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_frame  00000044  00000000  00000000  000010b4  2**2
+  8 .debug_frame  00000044  00000000  00000000  000010a8  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    00000362  00000000  00000000  000010f8  2**0
+  9 .debug_str    00000362  00000000  00000000  000010ec  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    00000068  00000000  00000000  0000145a  2**0
+ 10 .debug_loc    00000068  00000000  00000000  0000144e  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000020  00000000  00000000  000014c2  2**0
+ 11 .debug_ranges 00000020  00000000  00000000  000014b6  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -61,7 +61,7 @@ Disassembly of section .text:
   5c:	de bf       	out	0x3e, r29	; 62
   5e:	cd bf       	out	0x3d, r28	; 61
   60:	0e 94 43 00 	call	0x86	; 0x86 <main>
-  64:	0c 94 63 00 	jmp	0xc6	; 0xc6 <_exit>
+  64:	0c 94 61 00 	jmp	0xc2	; 0xc2 <_exit>
 
 00000068 <__bad_interrupt>:
   68:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
@@ -118,45 +118,47 @@ int main(void)
   9a:	0e 94 36 00 	call	0x6c	; 0x6c <UART_init>
 	char ch = '0';
   9e:	c0 e3       	ldi	r28, 0x30	; 48
+  a0:	01 c0       	rjmp	.+2      	; 0xa4 <main+0x1e>
+    {
+		 if(!(PINA & (1<<PA0))){
+			USART_Transmit(ch);
+			_delay_ms(200);
+			ch++;
+			if(ch == '7') ch = '0';
+  a2:	c0 e3       	ldi	r28, 0x30	; 48
+    PORTA = (1<<PA0);
+	UART_init(MYUBRR);
+	char ch = '0';
     while (1) 
     {
 		 if(!(PINA & (1<<PA0))){
-  a0:	c8 99       	sbic	0x19, 0	; 25
-  a2:	0d c0       	rjmp	.+26     	; 0xbe <main+0x38>
+  a4:	c8 99       	sbic	0x19, 0	; 25
+  a6:	fe cf       	rjmp	.-4      	; 0xa4 <main+0x1e>
 			USART_Transmit(ch);
-  a4:	8c 2f       	mov	r24, r28
-  a6:	0e 94 3f 00 	call	0x7e	; 0x7e <USART_Transmit>
+  a8:	8c 2f       	mov	r24, r28
+  aa:	0e 94 3f 00 	call	0x7e	; 0x7e <USART_Transmit>
 	#else
 		//round up by default
 		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
 	#endif
 
 	__builtin_avr_delay_cycles(__ticks_dc);
-  aa:	8f e4       	ldi	r24, 0x4F	; 79
-  ac:	93 ec       	ldi	r25, 0xC3	; 195
-  ae:	01 97       	sbiw	r24, 0x01	; 1
-  b0:	f1 f7       	brne	.-4      	; 0xae <main+0x28>
-  b2:	00 c0       	rjmp	.+0      	; 0xb4 <main+0x2e>
-  b4:	00 00       	nop
+  ae:	8f e4       	ldi	r24, 0x4F	; 79
+  b0:	93 ec       	ldi	r25, 0xC3	; 195
+  b2:	01 97       	sbiw	r24, 0x01	; 1
+  b4:	f1 f7       	brne	.-4      	; 0xb2 <main+0x2c>
+  b6:	00 c0       	rjmp	.+0      	; 0xb8 <main+0x32>
+  b8:	00 00       	nop
 			_delay_ms(200);
 			ch++;
-  b6:	cf 5f       	subi	r28, 0xFF	; 255
+  ba:	cf 5f       	subi	r28, 0xFF	; 255
 			if(ch == '7') ch = '0';
-  b8:	c7 33       	cpi	r28, 0x37	; 55
-  ba:	09 f4       	brne	.+2      	; 0xbe <main+0x38>
-  bc:	c0 e3       	ldi	r28, 0x30	; 48
-			
-		 }
-		 PORTD |= (1<<PD3) ;
-  be:	82 b3       	in	r24, 0x12	; 18
-  c0:	88 60       	ori	r24, 0x08	; 8
-  c2:	82 bb       	out	0x12, r24	; 18
-			 
-    }
-  c4:	ed cf       	rjmp	.-38     	; 0xa0 <main+0x1a>
+  bc:	c7 33       	cpi	r28, 0x37	; 55
+  be:	91 f7       	brne	.-28     	; 0xa4 <main+0x1e>
+  c0:	f0 cf       	rjmp	.-32     	; 0xa2 <main+0x1c>
 
-000000c6 <_exit>:
-  c6:	f8 94       	cli
+000000c2 <_exit>:
+  c2:	f8 94       	cli
 
-000000c8 <__stop_program>:
-  c8:	ff cf       	rjmp	.-2      	; 0xc8 <__stop_program>
+000000c4 <__stop_program>:
+  c4:	ff cf       	rjmp	.-2      	; 0xc4 <__stop_program>

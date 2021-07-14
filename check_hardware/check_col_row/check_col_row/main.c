@@ -3,7 +3,6 @@
 #include <util/delay.h>
 #include <stdlib.h>
 #include <time.h>
-
 typedef uint8_t bool;
 #define FALSE 0x00
 #define TRUE 0xFF
@@ -12,6 +11,28 @@ typedef uint8_t bool;
 #define LEFT -1
 #define RIGHT 1
 typedef enum { O, I, L, J, S, Z,  T } shape_type;
+	
+void ADC_Init()
+{
+	//DDRA = 0x00;		/* Make ADC port as input */
+	ADCSRA = 0b10000001;		/* Enable ADC, fr/128  */
+	ADMUX =  0b01000000;		/* Vref: Avcc, ADC channel: 0 */
+}
+
+int ADC_Read(char channel)
+{
+	int ADC_value;
+	
+	ADMUX = (0x40) | (channel & 0x07);/* set input channel to read */
+	ADCSRA |= (1<<ADSC);	/* start conversion */
+	while((ADCSRA &(1<<ADIF))== 0);	/* monitor end of conversion interrupt flag */
+	
+	ADCSRA |= (1<<ADIF);	/* clear interrupt flag */
+	ADC_value = (int)ADCL;	/* read lower byte */
+	ADC_value = ADC_value + (int)ADCH*256;/* read higher 2 bits, Multiply with weightage */
+
+	return ADC_value;		/* return digital value */
+}
 
 volatile char row[] = {1, 2, 4, 8, 16, 32, 64, 128};
 int rand_val[100] =   {0 ,2 ,2 ,0 ,0 ,2 ,2 ,6 ,4 ,1 ,
@@ -317,12 +338,10 @@ void update_score1x(){
 		}
 		if(temp == TRUE){
 			UART_send(10);
-			/*
-			PORTD |= 1 << PD7 ;
+			PORTA |= 1 << PA2 ;
 			_delay_ms(200);
-			PORTD &= ~(1 << PD7);
+			PORTA &= ~(1 << PA2);
 			_delay_ms(200);
-			*/
 			remove_row(i);
 		}
 	}
@@ -340,12 +359,10 @@ void update_score2x(){
 		}
 		if(temp == TRUE){
 			UART_send(11);
-			/*
-			PORTD |= 1 << PD7 ;
+			PORTA |= 1 << PA2 ;
 			_delay_ms(200);
-			PORTD &= ~(1 << PD7);
+			PORTA &= ~(1 << PA2);
 			_delay_ms(200);
-			*/
 			for(int t = 0; t < 4; t++){
 				remove_row(i);
 			}
@@ -452,6 +469,11 @@ void start_again(){
 	}
 	count_speed = 175;
 	count_count = 0;
+	
+	PORTA |= 1 << PA2 ;
+	_delay_ms(200);
+	PORTA &= ~(1 << PA2);
+	_delay_ms(200);
 }
 
 int main(void)
@@ -459,21 +481,33 @@ int main(void)
 	MCUCSR |= 1<<JTD;
 	MCUCSR |= 1<<JTD;
 	srand(time(NULL));
-	DDRA = 0xFF;
+	DDRA = 0b11111100;
 	DDRB = 0xFF;
 	DDRC = 0xFF;
-	DDRD = 0b10000100 ;
+	DDRD = 0xFF;
+	PORTA &= 0b11111011;
+	uint8_t led_col = 0x00;
 	int i = 7, count = 0,r = 0;
+	int ADC_Value_X = -1, ADC_Value_Y = -1;
+	ADC_Init();
 	UART_init();
 	while (1)
 	{
 		PORTC = 0x00; // common row connection
 		PORTC |= row[i]; // common row connection
 		PORTB = ~get_col(i); // upper matrix column
-		PORTA = ~get_col(i+8); // lower matrix column
+		// lower matrix column
+		led_col = ~get_col(i+8);
+		PORTA |= 0xF0;
+		PORTD |= 0xF0;
+		PORTA &= ((led_col & 0x0F) << 4) | 0x0F;
+		PORTD &= (led_col & 0xF0) | 0x0F;
+		
 		_delay_ms(2);
 		PORTB = ~0x0; // upper matrix column
-		PORTA = ~0x0; // lower matrix column
+		//PORTA = ~0x0; // lower matrix column
+		PORTA |= 0xF0;
+		PORTD |= 0xF0;
 		if(i == 7) i = 0;
 		else i++;
 		//_delay_us(1500);
@@ -484,20 +518,21 @@ int main(void)
 			//remove_shape(current_shape_array);
 			if(check_valid(0 , 2 , current_shape_array) == TRUE){
 				UART_send(current_shape);
-				set_shape(current_shape_array);
+				//set_shape(current_shape_array);
 				//_delay_ms(2);
 			}
 			else{
-				UART_send(9);
+				//UART_send(9);
 				
-				PORTD |= (1<< PD7);
-				_delay_ms(200);
-				PORTD &= ~(1<< PD7);
-				_delay_ms(200);
+				//PORTD |= (1<< PD7);
+				//_delay_ms(200);
+				//PORTD &= ~(1<< PD7);
+				//_delay_ms(200);
 				
 				start_again();
-				_delay_ms(1000);
+				_delay_ms(200);
 			}
+			set_shape(current_shape_array);
 		}
 		count++;
 		if(count == count_speed){
@@ -512,21 +547,22 @@ int main(void)
 			_delay_ms(5);
 		}
 		
-		if(!(PIND & (1<<PD3))){
+		ADC_Value_X = ADC_Read(0);
+		ADC_Value_Y = ADC_Read(1);	
+		if(ADC_Value_X < 100){
 			go_left();
 			_delay_ms(200);
 		}
-		
-		if(!(PIND & (1<<PD4))){
+		if(ADC_Value_X > 900){
 			go_right();
 			_delay_ms(200);
 		}
-		if(!(PIND & (1<<PD5))){
+		if(ADC_Value_Y > 900){
 			go_down();
 			//go_down();
 			_delay_ms(100);
 		}
-		if(!(PIND & (1<<PD6))){
+		if(ADC_Value_Y < 100){ 
 			rotate_shape(current_shape_array);
 			remove_shape(current_shape_array);
 			if(check_valid(current_R, current_C, temp_shape_array) == TRUE){

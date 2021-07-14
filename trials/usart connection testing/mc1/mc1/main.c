@@ -41,7 +41,6 @@ int main(void)
 			if(ch == '7') ch = '0';
 			
 		 }
-		 PORTD |= (1<<PD3) ;
 			 
     }
 }
