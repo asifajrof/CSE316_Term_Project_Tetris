@@ -13,7 +13,7 @@ int main(void)
 	DDRB |= (1<<PINB0);
 	
 	//communication UART specifications (parity, stop bits, data bit length)
-	int UBRR_Value = 25; // this is for 2400 baud
+	int UBRR_Value = 6; // this is for 2400 baud
 	
 	UBRRH = (unsigned char) (UBRR_Value >> 8);
 	UBRRL = (unsigned char) UBRR_Value;

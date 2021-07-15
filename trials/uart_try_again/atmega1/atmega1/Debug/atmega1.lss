@@ -94,11 +94,11 @@ int main(void)
 	int released_confidence_level = 0;
 	
 	//communication uart specifications (parity, stop bits, data bit length)
-	int UBRR_Value = 25;
+	int UBRR_Value = 6;
 	UBRRH = (unsigned char) (UBRR_Value >> 8);
   84:	10 bc       	out	0x20, r1	; 32
 	UBRRL = (unsigned char) UBRR_Value;
-  86:	89 e1       	ldi	r24, 0x19	; 25
+  86:	86 e0       	ldi	r24, 0x06	; 6
   88:	89 b9       	out	0x09, r24	; 9
 	UCSRB = (1<<RXEN) | (1<<TXEN);
   8a:	88 e1       	ldi	r24, 0x18	; 24

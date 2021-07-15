@@ -22,7 +22,7 @@ int main(void)
 	int released_confidence_level = 0;
 	
 	//communication uart specifications (parity, stop bits, data bit length)
-	int UBRR_Value = 25;
+	int UBRR_Value = 6;
 	UBRRH = (unsigned char) (UBRR_Value >> 8);
 	UBRRL = (unsigned char) UBRR_Value;
 	UCSRB = (1<<RXEN) | (1<<TXEN);
