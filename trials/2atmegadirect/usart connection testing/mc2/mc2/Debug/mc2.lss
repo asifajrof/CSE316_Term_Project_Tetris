@@ -3,29 +3,29 @@ mc2.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         00000116  00000000  00000000  00000054  2**1
+  0 .text         00000162  00000000  00000000  00000054  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         00000000  00800060  00800060  0000016a  2**0
+  1 .data         00000000  00800060  00800060  000001b6  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .comment      00000030  00000000  00000000  0000016a  2**0
+  2 .comment      00000030  00000000  00000000  000001b6  2**0
                   CONTENTS, READONLY
-  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  0000019c  2**2
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  000001e8  2**2
                   CONTENTS, READONLY
-  4 .debug_aranges 00000020  00000000  00000000  000001d8  2**0
+  4 .debug_aranges 00000020  00000000  00000000  00000224  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_info   0000069a  00000000  00000000  000001f8  2**0
+  5 .debug_info   00000747  00000000  00000000  00000244  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 00000570  00000000  00000000  00000892  2**0
+  6 .debug_abbrev 0000058b  00000000  00000000  0000098b  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   000002d5  00000000  00000000  00000e02  2**0
+  7 .debug_line   000002f0  00000000  00000000  00000f16  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_frame  00000024  00000000  00000000  000010d8  2**2
+  8 .debug_frame  00000024  00000000  00000000  00001208  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    0000034d  00000000  00000000  000010fc  2**0
+  9 .debug_str    0000034d  00000000  00000000  0000122c  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    00000120  00000000  00000000  00001449  2**0
+ 10 .debug_loc    000001b0  00000000  00000000  00001579  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000010  00000000  00000000  00001569  2**0
+ 11 .debug_ranges 00000010  00000000  00000000  00001729  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -61,7 +61,7 @@ Disassembly of section .text:
   5c:	de bf       	out	0x3e, r29	; 62
   5e:	cd bf       	out	0x3d, r28	; 61
   60:	0e 94 36 00 	call	0x6c	; 0x6c <main>
-  64:	0c 94 89 00 	jmp	0x112	; 0x112 <_exit>
+  64:	0c 94 af 00 	jmp	0x15e	; 0x15e <_exit>
 
 00000068 <__bad_interrupt>:
   68:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
@@ -81,9 +81,9 @@ int main(void)
 	
 	while (1)
 	{
-		if(PIND & 00000001){
+		if(PIND & 0b00000001){
   74:	80 9b       	sbis	0x10, 0	; 16
-  76:	0b c0       	rjmp	.+22     	; 0x8e <main+0x22>
+  76:	0e c0       	rjmp	.+28     	; 0x94 <main+0x28>
 			PORTC = 0x00;
   78:	15 ba       	out	0x15, r1	; 21
 			PORTC |= (1<<PC1);
@@ -96,115 +96,150 @@ int main(void)
 	#endif
 
 	__builtin_avr_delay_cycles(__ticks_dc);
-  80:	87 ea       	ldi	r24, 0xA7	; 167
-  82:	91 e6       	ldi	r25, 0x61	; 97
-  84:	01 97       	sbiw	r24, 0x01	; 1
-  86:	f1 f7       	brne	.-4      	; 0x84 <main+0x18>
-  88:	00 c0       	rjmp	.+0      	; 0x8a <main+0x1e>
-  8a:	00 00       	nop
-  8c:	f3 cf       	rjmp	.-26     	; 0x74 <main+0x8>
-			_delay_ms(100);
+  80:	2f e6       	ldi	r18, 0x6F	; 111
+  82:	81 e1       	ldi	r24, 0x11	; 17
+  84:	91 e0       	ldi	r25, 0x01	; 1
+  86:	21 50       	subi	r18, 0x01	; 1
+  88:	80 40       	sbci	r24, 0x00	; 0
+  8a:	90 40       	sbci	r25, 0x00	; 0
+  8c:	e1 f7       	brne	.-8      	; 0x86 <main+0x1a>
+  8e:	00 c0       	rjmp	.+0      	; 0x90 <main+0x24>
+  90:	00 00       	nop
+  92:	f0 cf       	rjmp	.-32     	; 0x74 <main+0x8>
+			_delay_ms(350);
 		}
-		else if(PIND & 00000010){
-  8e:	83 9b       	sbis	0x10, 3	; 16
-  90:	0b c0       	rjmp	.+22     	; 0xa8 <main+0x3c>
+		else if(PIND & 0b00000010){
+  94:	81 9b       	sbis	0x10, 1	; 16
+  96:	0e c0       	rjmp	.+28     	; 0xb4 <main+0x48>
 			PORTC = 0x00;
-  92:	15 ba       	out	0x15, r1	; 21
+  98:	15 ba       	out	0x15, r1	; 21
 			PORTC |= (1<<PC2);
-  94:	85 b3       	in	r24, 0x15	; 21
-  96:	84 60       	ori	r24, 0x04	; 4
-  98:	85 bb       	out	0x15, r24	; 21
-  9a:	87 ea       	ldi	r24, 0xA7	; 167
-  9c:	91 e6       	ldi	r25, 0x61	; 97
-  9e:	01 97       	sbiw	r24, 0x01	; 1
-  a0:	f1 f7       	brne	.-4      	; 0x9e <main+0x32>
-  a2:	00 c0       	rjmp	.+0      	; 0xa4 <main+0x38>
-  a4:	00 00       	nop
-  a6:	e6 cf       	rjmp	.-52     	; 0x74 <main+0x8>
-			_delay_ms(100);
+  9a:	85 b3       	in	r24, 0x15	; 21
+  9c:	84 60       	ori	r24, 0x04	; 4
+  9e:	85 bb       	out	0x15, r24	; 21
+  a0:	2f e6       	ldi	r18, 0x6F	; 111
+  a2:	81 e1       	ldi	r24, 0x11	; 17
+  a4:	91 e0       	ldi	r25, 0x01	; 1
+  a6:	21 50       	subi	r18, 0x01	; 1
+  a8:	80 40       	sbci	r24, 0x00	; 0
+  aa:	90 40       	sbci	r25, 0x00	; 0
+  ac:	e1 f7       	brne	.-8      	; 0xa6 <main+0x3a>
+  ae:	00 c0       	rjmp	.+0      	; 0xb0 <main+0x44>
+  b0:	00 00       	nop
+  b2:	e0 cf       	rjmp	.-64     	; 0x74 <main+0x8>
+			_delay_ms(350);
 		}
-		else if(PIND & 00000011){
-  a8:	80 b3       	in	r24, 0x10	; 16
-  aa:	89 70       	andi	r24, 0x09	; 9
-  ac:	59 f0       	breq	.+22     	; 0xc4 <main+0x58>
+		else if(PIND & 0b00000011){
+  b4:	80 b3       	in	r24, 0x10	; 16
+  b6:	83 70       	andi	r24, 0x03	; 3
+  b8:	71 f0       	breq	.+28     	; 0xd6 <main+0x6a>
 			PORTC = 0x00;
-  ae:	15 ba       	out	0x15, r1	; 21
+  ba:	15 ba       	out	0x15, r1	; 21
 			PORTC |= (1<<PC3);
-  b0:	85 b3       	in	r24, 0x15	; 21
-  b2:	88 60       	ori	r24, 0x08	; 8
-  b4:	85 bb       	out	0x15, r24	; 21
-  b6:	87 ea       	ldi	r24, 0xA7	; 167
-  b8:	91 e6       	ldi	r25, 0x61	; 97
-  ba:	01 97       	sbiw	r24, 0x01	; 1
-  bc:	f1 f7       	brne	.-4      	; 0xba <main+0x4e>
-  be:	00 c0       	rjmp	.+0      	; 0xc0 <main+0x54>
-  c0:	00 00       	nop
-  c2:	d8 cf       	rjmp	.-80     	; 0x74 <main+0x8>
-			_delay_ms(100);
+  bc:	85 b3       	in	r24, 0x15	; 21
+  be:	88 60       	ori	r24, 0x08	; 8
+  c0:	85 bb       	out	0x15, r24	; 21
+  c2:	2f e6       	ldi	r18, 0x6F	; 111
+  c4:	81 e1       	ldi	r24, 0x11	; 17
+  c6:	91 e0       	ldi	r25, 0x01	; 1
+  c8:	21 50       	subi	r18, 0x01	; 1
+  ca:	80 40       	sbci	r24, 0x00	; 0
+  cc:	90 40       	sbci	r25, 0x00	; 0
+  ce:	e1 f7       	brne	.-8      	; 0xc8 <main+0x5c>
+  d0:	00 c0       	rjmp	.+0      	; 0xd2 <main+0x66>
+  d2:	00 00       	nop
+  d4:	cf cf       	rjmp	.-98     	; 0x74 <main+0x8>
+			_delay_ms(350);
 		}
-		else if(PIND & 00000100){
-  c4:	86 9b       	sbis	0x10, 6	; 16
-  c6:	0b c0       	rjmp	.+22     	; 0xde <main+0x72>
+		else if(PIND & 0b00000100){
+  d6:	82 9b       	sbis	0x10, 2	; 16
+  d8:	0e c0       	rjmp	.+28     	; 0xf6 <main+0x8a>
 			PORTC = 0x00;
-  c8:	15 ba       	out	0x15, r1	; 21
+  da:	15 ba       	out	0x15, r1	; 21
 			PORTC |= (1<<PC4);
-  ca:	85 b3       	in	r24, 0x15	; 21
-  cc:	80 61       	ori	r24, 0x10	; 16
-  ce:	85 bb       	out	0x15, r24	; 21
-  d0:	87 ea       	ldi	r24, 0xA7	; 167
-  d2:	91 e6       	ldi	r25, 0x61	; 97
-  d4:	01 97       	sbiw	r24, 0x01	; 1
-  d6:	f1 f7       	brne	.-4      	; 0xd4 <main+0x68>
-  d8:	00 c0       	rjmp	.+0      	; 0xda <main+0x6e>
-  da:	00 00       	nop
-  dc:	cb cf       	rjmp	.-106    	; 0x74 <main+0x8>
-			_delay_ms(100);
+  dc:	85 b3       	in	r24, 0x15	; 21
+  de:	80 61       	ori	r24, 0x10	; 16
+  e0:	85 bb       	out	0x15, r24	; 21
+  e2:	2f e6       	ldi	r18, 0x6F	; 111
+  e4:	81 e1       	ldi	r24, 0x11	; 17
+  e6:	91 e0       	ldi	r25, 0x01	; 1
+  e8:	21 50       	subi	r18, 0x01	; 1
+  ea:	80 40       	sbci	r24, 0x00	; 0
+  ec:	90 40       	sbci	r25, 0x00	; 0
+  ee:	e1 f7       	brne	.-8      	; 0xe8 <main+0x7c>
+  f0:	00 c0       	rjmp	.+0      	; 0xf2 <main+0x86>
+  f2:	00 00       	nop
+  f4:	bf cf       	rjmp	.-130    	; 0x74 <main+0x8>
+			_delay_ms(350);
 		}
-		else if(PIND & 00000101){
-  de:	80 b3       	in	r24, 0x10	; 16
-  e0:	81 74       	andi	r24, 0x41	; 65
-  e2:	29 f0       	breq	.+10     	; 0xee <main+0x82>
+		else if(PIND & 0b00000101){
+  f6:	80 b3       	in	r24, 0x10	; 16
+  f8:	85 70       	andi	r24, 0x05	; 5
+  fa:	71 f0       	breq	.+28     	; 0x118 <main+0xac>
 			PORTC = 0x00;
-  e4:	15 ba       	out	0x15, r1	; 21
+  fc:	15 ba       	out	0x15, r1	; 21
 			PORTC |= (1<<PC5);
-  e6:	85 b3       	in	r24, 0x15	; 21
-  e8:	80 62       	ori	r24, 0x20	; 32
-  ea:	85 bb       	out	0x15, r24	; 21
-  ec:	c3 cf       	rjmp	.-122    	; 0x74 <main+0x8>
-			//_delay_ms(100);
+  fe:	85 b3       	in	r24, 0x15	; 21
+ 100:	80 62       	ori	r24, 0x20	; 32
+ 102:	85 bb       	out	0x15, r24	; 21
+ 104:	2f e6       	ldi	r18, 0x6F	; 111
+ 106:	81 e1       	ldi	r24, 0x11	; 17
+ 108:	91 e0       	ldi	r25, 0x01	; 1
+ 10a:	21 50       	subi	r18, 0x01	; 1
+ 10c:	80 40       	sbci	r24, 0x00	; 0
+ 10e:	90 40       	sbci	r25, 0x00	; 0
+ 110:	e1 f7       	brne	.-8      	; 0x10a <main+0x9e>
+ 112:	00 c0       	rjmp	.+0      	; 0x114 <main+0xa8>
+ 114:	00 00       	nop
+ 116:	ae cf       	rjmp	.-164    	; 0x74 <main+0x8>
+			_delay_ms(350);
 		}
-		else if(PIND & 00000110){
-  ee:	80 b3       	in	r24, 0x10	; 16
-  f0:	88 74       	andi	r24, 0x48	; 72
-  f2:	29 f0       	breq	.+10     	; 0xfe <main+0x92>
+		else if(PIND & 0b00000110){
+ 118:	80 b3       	in	r24, 0x10	; 16
+ 11a:	86 70       	andi	r24, 0x06	; 6
+ 11c:	71 f0       	breq	.+28     	; 0x13a <main+0xce>
 			PORTC = 0x00;
-  f4:	15 ba       	out	0x15, r1	; 21
+ 11e:	15 ba       	out	0x15, r1	; 21
 			PORTC |= (1<<PC6);
-  f6:	85 b3       	in	r24, 0x15	; 21
-  f8:	80 64       	ori	r24, 0x40	; 64
-  fa:	85 bb       	out	0x15, r24	; 21
-  fc:	bb cf       	rjmp	.-138    	; 0x74 <main+0x8>
-			//_delay_ms(100);
+ 120:	85 b3       	in	r24, 0x15	; 21
+ 122:	80 64       	ori	r24, 0x40	; 64
+ 124:	85 bb       	out	0x15, r24	; 21
+ 126:	2f e6       	ldi	r18, 0x6F	; 111
+ 128:	81 e1       	ldi	r24, 0x11	; 17
+ 12a:	91 e0       	ldi	r25, 0x01	; 1
+ 12c:	21 50       	subi	r18, 0x01	; 1
+ 12e:	80 40       	sbci	r24, 0x00	; 0
+ 130:	90 40       	sbci	r25, 0x00	; 0
+ 132:	e1 f7       	brne	.-8      	; 0x12c <main+0xc0>
+ 134:	00 c0       	rjmp	.+0      	; 0x136 <main+0xca>
+ 136:	00 00       	nop
+ 138:	9d cf       	rjmp	.-198    	; 0x74 <main+0x8>
+			_delay_ms(350);
 		}
 		else if(PIND & 00000111){
-  fe:	80 b3       	in	r24, 0x10	; 16
- 100:	89 74       	andi	r24, 0x49	; 73
- 102:	29 f0       	breq	.+10     	; 0x10e <main+0xa2>
+ 13a:	80 b3       	in	r24, 0x10	; 16
+ 13c:	89 74       	andi	r24, 0x49	; 73
+ 13e:	09 f4       	brne	.+2      	; 0x142 <main+0xd6>
+ 140:	99 cf       	rjmp	.-206    	; 0x74 <main+0x8>
 			PORTC = 0x00;
- 104:	15 ba       	out	0x15, r1	; 21
+ 142:	15 ba       	out	0x15, r1	; 21
 			PORTC |= (1<<PC7);
- 106:	85 b3       	in	r24, 0x15	; 21
- 108:	80 68       	ori	r24, 0x80	; 128
- 10a:	85 bb       	out	0x15, r24	; 21
- 10c:	b3 cf       	rjmp	.-154    	; 0x74 <main+0x8>
-			//_delay_ms(100);
-		}
-		else if(PIND & 00001000){
- 10e:	80 b3       	in	r24, 0x10	; 16
- 110:	b1 cf       	rjmp	.-158    	; 0x74 <main+0x8>
+ 144:	85 b3       	in	r24, 0x15	; 21
+ 146:	80 68       	ori	r24, 0x80	; 128
+ 148:	85 bb       	out	0x15, r24	; 21
+ 14a:	2f e6       	ldi	r18, 0x6F	; 111
+ 14c:	81 e1       	ldi	r24, 0x11	; 17
+ 14e:	91 e0       	ldi	r25, 0x01	; 1
+ 150:	21 50       	subi	r18, 0x01	; 1
+ 152:	80 40       	sbci	r24, 0x00	; 0
+ 154:	90 40       	sbci	r25, 0x00	; 0
+ 156:	e1 f7       	brne	.-8      	; 0x150 <main+0xe4>
+ 158:	00 c0       	rjmp	.+0      	; 0x15a <main+0xee>
+ 15a:	00 00       	nop
+ 15c:	8b cf       	rjmp	.-234    	; 0x74 <main+0x8>
 
-00000112 <_exit>:
- 112:	f8 94       	cli
+0000015e <_exit>:
+ 15e:	f8 94       	cli
 
-00000114 <__stop_program>:
- 114:	ff cf       	rjmp	.-2      	; 0x114 <__stop_program>
+00000160 <__stop_program>:
+ 160:	ff cf       	rjmp	.-2      	; 0x160 <__stop_program>

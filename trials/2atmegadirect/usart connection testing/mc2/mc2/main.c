@@ -9,45 +9,40 @@ int main(void)
 	
 	while (1)
 	{
-		if(PIND & 00000001){
+		if(PIND & 0b00000001){
 			PORTC = 0x00;
 			PORTC |= (1<<PC1);
-			_delay_ms(100);
+			_delay_ms(350);
 		}
-		else if(PIND & 00000010){
+		else if(PIND & 0b00000010){
 			PORTC = 0x00;
 			PORTC |= (1<<PC2);
-			_delay_ms(100);
+			_delay_ms(350);
 		}
-		else if(PIND & 00000011){
+		else if(PIND & 0b00000011){
 			PORTC = 0x00;
 			PORTC |= (1<<PC3);
-			_delay_ms(100);
+			_delay_ms(350);
 		}
-		else if(PIND & 00000100){
+		else if(PIND & 0b00000100){
 			PORTC = 0x00;
 			PORTC |= (1<<PC4);
-			_delay_ms(100);
+			_delay_ms(350);
 		}
-		else if(PIND & 00000101){
+		else if(PIND & 0b00000101){
 			PORTC = 0x00;
 			PORTC |= (1<<PC5);
-			//_delay_ms(100);
+			_delay_ms(350);
 		}
-		else if(PIND & 00000110){
+		else if(PIND & 0b00000110){
 			PORTC = 0x00;
 			PORTC |= (1<<PC6);
-			//_delay_ms(100);
+			_delay_ms(350);
 		}
 		else if(PIND & 00000111){
 			PORTC = 0x00;
 			PORTC |= (1<<PC7);
-			//_delay_ms(100);
-		}
-		else if(PIND & 00001000){
-			PORTC = 0x00;
-			PORTC |= (1<<PC1);
-			//_delay_ms(100);
+			_delay_ms(350);
 		}
 		
 	}

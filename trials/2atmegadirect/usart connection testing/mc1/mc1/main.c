@@ -21,8 +21,8 @@ int main(void)
 			PORTD = 0;
 			_delay_ms(200);
 			n++;
-			if(n == 9) n = 1;
-			
+			if(n == 8) n = 1;
+			_delay_ms(200);
 		 }
 			 
     }
