@@ -210,29 +210,43 @@ int main(void)
 			}
 			ch1 = 'T';
 		}
-		char score[10];	
-		dtostrf(score_update , 0, 2, score);
+		char score[3];	
+		dtostrf(score_update , 3, 0, score);
+		
+		//char score_msg[16];
+		//char second_msg[16];
 		if(flag == 1 ){
 			//Lcd4_Clear();
-			char msg[] = "Score : ";
-			char msg1[] = "Next piece :   ";
-			msg1[13] = ch1;
-			Lcd4_Set_Cursor(1,1);
-			Lcd4_Write_String(msg);
-			Lcd4_Write_String(score);
-			Lcd4_Set_Cursor(2,1);
-			Lcd4_Write_String(msg1);
+			char score_msg[] = " Score:         ";
+			for(int score_i=0; score_i<3; score_i++){
+				if(score[score_i] == '.')
+					break;
+				score_msg[8+score_i] = score[score_i];
+			}
+			char second_msg [] = " Next piece :   ";
+			second_msg[14] = ch1;
+			Lcd4_Set_Cursor(1,0);
+			Lcd4_Write_String(score_msg);
+			//Lcd4_Write_String(score);
+			Lcd4_Set_Cursor(2,0);
+			Lcd4_Write_String(second_msg);
 		}
 		
 		else{
 			//Lcd4_Clear();
-			char msg[] = "Final Score : ";
-			char msg1[] = "Game Over!    ";
-			Lcd4_Set_Cursor(1,1);
-			Lcd4_Write_String(msg);
-			Lcd4_Write_String(score);
-			Lcd4_Set_Cursor(2,1);
-			Lcd4_Write_String(msg1);
+			char score_msg[] = "Final Score:    ";
+			for(int score_i=0; score_i<3; score_i++){
+				if(score[score_i] == '.')
+				break;
+				score_msg[12+score_i] = score[score_i];
+			}
+			char second_msg[] = " Game Over!     ";
+			Lcd4_Set_Cursor(1,0);
+			Lcd4_Write_String(score_msg);
+			//Lcd4_Write_String(score);
+			Lcd4_Set_Cursor(2,0);
+			Lcd4_Write_String(second_msg);
+			score_update = 0;
 		}
 		/*
 		for(int t = 0 ; t < 500; t++){
