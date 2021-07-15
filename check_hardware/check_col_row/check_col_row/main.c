@@ -115,12 +115,12 @@ void UART_init(void){
 
 	//Enable the receiver and transmitter
 
-	UCSRB = (1 << TXEN);
+	UCSRB = (1<<RXEN) |(1 << TXEN);
 
 	//Set 2 stop bits and data bit length is 8-bit
 
-	//UCSRC = (1 << USBS) | (3 << UCSZ0);
-	UCSRC = 0b10001110;
+	UCSRC = (1 << USBS) | (3 << UCSZ0);
+	//UCSRC = 0b10001110;
 }
 
 void UART_send(unsigned char data){
@@ -522,13 +522,7 @@ int main(void)
 				//_delay_ms(2);
 			}
 			else{
-				//UART_send(9);
-				
-				//PORTD |= (1<< PD7);
-				//_delay_ms(200);
-				//PORTD &= ~(1<< PD7);
-				//_delay_ms(200);
-				
+				UART_send(9);
 				start_again();
 				_delay_ms(200);
 			}
@@ -559,7 +553,6 @@ int main(void)
 		}
 		if(ADC_Value_Y > 900){
 			go_down();
-			//go_down();
 			_delay_ms(100);
 		}
 		if(ADC_Value_Y < 100){ 

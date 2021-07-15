@@ -110,7 +110,7 @@ void UART_init(void){
 
 	UBRRL = (unsigned char) UBRR_Value;
 
-	UCSRB = (1 << RXEN);
+	UCSRB = (1 << RXEN)| (1<TXEN);
 
 	UCSRC = (1 << USBS) | (3 << UCSZ0);
 	//UCSRC = 0b10001110;
@@ -234,13 +234,13 @@ int main(void)
 			Lcd4_Set_Cursor(2,1);
 			Lcd4_Write_String(msg1);
 		}
-		
+		/*
 		for(int t = 0 ; t < 500; t++){
 			for(int i=0; i<8; i++){
 				PORTA = ~row[i];
 				PORTB = get_col(i);
 			}
-		}	
+		}*/	
 		
 		//_delay_us(10);
     }

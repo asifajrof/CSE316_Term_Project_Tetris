@@ -1,7 +1,6 @@
 #define F_CPU 1000000
 #include <avr/io.h>
 #include <util/delay.h>
-#include "ADC_H.h"
 #define D4 eS_PORTD4
 #define D5 eS_PORTD5
 #define D6 eS_PORTD6
@@ -19,8 +18,6 @@ int main(void)
 	DDRD = 0b11111110;
 	DDRC = 0xFF;
 	char buffer[20];
-	int ADC_Value;
-	ADC_Init();
 	Lcd4_Init();
 	int score_update = 0;
 	Lcd4_Clear();
