@@ -476,6 +476,71 @@ void start_again(){
 	_delay_ms(200);
 }
 
+void display(int i){
+	uint8_t led_col = 0x00;
+	PORTC = 0x00; // common row connection
+	PORTC |= row[i]; // common row connection
+	PORTB = ~get_col(i); // upper matrix column
+	// lower matrix column
+	led_col = ~get_col(i+8);
+	PORTA |= 0xF0; // clear
+	PORTD |= 0xF0; //clear
+	PORTA &= ((led_col & 0x0F) << 4) | 0x0F; // col0-col3 --> A4-A7
+	PORTD &= (led_col & 0xF0) | 0x0F; // col4- col7 --> D4-D7
+	_delay_ms(2);
+	PORTB = ~0x0; // upper matrix column
+	//PORTA = ~0x0; // lower matrix column
+	PORTA |= 0xF0;
+	PORTD |= 0xF0;
+}
+
+void new_piece(int r){
+	if(current_R == 0 && current_C == 2 && current_shape == -1){
+		generate_shape(rand_val[r]);
+		//remove_shape(current_shape_array);
+		if(check_valid(0 , 2 , current_shape_array) == TRUE){
+			UART_send(current_shape);
+			//set_shape(current_shape_array);
+			//_delay_ms(2);
+		}
+		else{
+			UART_send(9);
+			start_again();
+			_delay_ms(200);
+		}
+		set_shape(current_shape_array);
+	}
+}
+
+void movement(int ADC_Value_X, int ADC_Value_Y){
+	ADC_Value_X = ADC_Read(0);
+	ADC_Value_Y = ADC_Read(1);
+	if(ADC_Value_X < 100){
+		go_left();
+		_delay_ms(200);
+	}
+	if(ADC_Value_X > 900){
+		go_right();
+		_delay_ms(200);
+	}
+	if(ADC_Value_Y > 900){
+		go_down();
+		_delay_ms(100);
+	}
+	if(ADC_Value_Y < 100){
+		rotate_shape(current_shape_array);
+		remove_shape(current_shape_array);
+		if(check_valid(current_R, current_C, temp_shape_array) == TRUE){
+			for(int i = 0 ; i < 4; i++){
+				for(int j = 0; j < 4; j++){
+					current_shape_array[i][j] = temp_shape_array[i][j];
+				}
+			}
+		}
+		set_shape(current_shape_array);
+		_delay_ms(250);
+	}
+}
 int main(void)
 {
 	MCUCSR |= 1<<JTD;
@@ -486,48 +551,19 @@ int main(void)
 	DDRC = 0xFF;
 	DDRD = 0xFF;
 	PORTA &= 0b11111011;
-	uint8_t led_col = 0x00;
 	int i = 7, count = 0,r = 0;
 	int ADC_Value_X = -1, ADC_Value_Y = -1;
 	ADC_Init();
 	UART_init();
 	while (1)
 	{
-		PORTC = 0x00; // common row connection
-		PORTC |= row[i]; // common row connection
-		PORTB = ~get_col(i); // upper matrix column
-		// lower matrix column
-		led_col = ~get_col(i+8);
-		PORTA |= 0xF0;
-		PORTD |= 0xF0;
-		PORTA &= ((led_col & 0x0F) << 4) | 0x0F;
-		PORTD &= (led_col & 0xF0) | 0x0F;
-		
-		_delay_ms(2);
-		PORTB = ~0x0; // upper matrix column
-		//PORTA = ~0x0; // lower matrix column
-		PORTA |= 0xF0;
-		PORTD |= 0xF0;
+		display(i);
 		if(i == 7) i = 0;
 		else i++;
 		//_delay_us(1500);
-		if(current_R == 0 && current_C == 2 && current_shape == -1){
-			generate_shape(rand_val[r]);
-			r++;
-			if(r == 100) r = 0;
-			//remove_shape(current_shape_array);
-			if(check_valid(0 , 2 , current_shape_array) == TRUE){
-				UART_send(current_shape);
-				//set_shape(current_shape_array);
-				//_delay_ms(2);
-			}
-			else{
-				UART_send(9);
-				start_again();
-				_delay_ms(200);
-			}
-			set_shape(current_shape_array);
-		}
+		new_piece(r);
+		r++;
+		if(r == 100) r = 0;
 		count++;
 		if(count == count_speed){
 			go_down();
@@ -540,43 +576,7 @@ int main(void)
 			}
 			_delay_ms(5);
 		}
-		
-		ADC_Value_X = ADC_Read(0);
-		ADC_Value_Y = ADC_Read(1);	
-		if(ADC_Value_X < 100){
-			go_left();
-			_delay_ms(200);
-		}
-		if(ADC_Value_X > 900){
-			go_right();
-			_delay_ms(200);
-		}
-		if(ADC_Value_Y > 900){
-			go_down();
-			_delay_ms(100);
-		}
-		if(ADC_Value_Y < 100){ 
-			rotate_shape(current_shape_array);
-			remove_shape(current_shape_array);
-			if(check_valid(current_R, current_C, temp_shape_array) == TRUE){
-				for(int i = 0 ; i < 4; i++){
-					for(int j = 0; j < 4; j++){
-						current_shape_array[i][j] = temp_shape_array[i][j];
-					}
-				}
-			}
-			set_shape(current_shape_array);
-			_delay_ms(250);
-		}
-		
-		//update_score2x();
-		//update_score1x();
-		//UART_send(11);
-		//PORTD |= 1 << PD7 ;
-		//_delay_ms(200);
-		//PORTD &= ~(1 << PD7);
-		//_delay_ms(200);
-		
+		movement(ADC_Value_X, ADC_Value_Y);
 	}
 }
 
