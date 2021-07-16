@@ -558,34 +558,65 @@ void new_piece(){
 	}
 }
 
+int pressed_confidence_level = 0;
 void movement(){
 	int ADC_Value_X = -1, ADC_Value_Y = -1;
 	ADC_Value_X = ADC_Read(0);
 	ADC_Value_Y = ADC_Read(1);
 	if(ADC_Value_Y > 900){
-		go_left();
-		_delay_ms(200);
+		pressed_confidence_level++;
+		if(pressed_confidence_level > 20){
+			go_left();
+			pressed_confidence_level = 0;
+		}
+		// go_left();
+		// _delay_ms(200);
 	}
 	else if(ADC_Value_Y < 100){
-		go_right();
-		_delay_ms(200);
+		pressed_confidence_level++;
+		if(pressed_confidence_level > 20){
+			go_right();
+			pressed_confidence_level = 0;
+		}
+		// go_right();
+		// _delay_ms(200);
 	}
 	else if(ADC_Value_X > 900){
-		go_down();
-		_delay_ms(100);
+		pressed_confidence_level++;
+		if(pressed_confidence_level > 20){
+			go_down();
+			pressed_confidence_level = 0;
+		}
+		// go_down();
+		// _delay_ms(100);
 	}
 	else if(ADC_Value_X < 100){
-		rotate_shape(current_shape_array);
-		remove_shape(current_shape_array);
-		if(check_valid(current_R, current_C, temp_shape_array) == TRUE){
-			for(int i = 0 ; i < 4; i++){
-				for(int j = 0; j < 4; j++){
-					current_shape_array[i][j] = temp_shape_array[i][j];
+		pressed_confidence_level++;
+		if(pressed_confidence_level > 20){
+			rotate_shape(current_shape_array);
+			remove_shape(current_shape_array);
+			if(check_valid(current_R, current_C, temp_shape_array) == TRUE){
+				for(int i = 0 ; i < 4; i++){
+					for(int j = 0; j < 4; j++){
+						current_shape_array[i][j] = temp_shape_array[i][j];
+					}
 				}
 			}
+			set_shape(current_shape_array);
+			
+			pressed_confidence_level = 0;
 		}
-		set_shape(current_shape_array);
-		_delay_ms(250);
+		// rotate_shape(current_shape_array);
+		// remove_shape(current_shape_array);
+		// if(check_valid(current_R, current_C, temp_shape_array) == TRUE){
+			// for(int i = 0 ; i < 4; i++){
+				// for(int j = 0; j < 4; j++){
+					// current_shape_array[i][j] = temp_shape_array[i][j];
+				// }
+			// }
+		// }
+		// set_shape(current_shape_array);
+		// _delay_ms(250);
 	}
 }
 
