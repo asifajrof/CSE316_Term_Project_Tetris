@@ -10,6 +10,7 @@ typedef uint8_t bool;
 #define DOWN 1
 #define LEFT -1
 #define RIGHT 1
+#define PRESS_CONF 50
 typedef enum { O, I, L, J, S, Z,  T } shape_type;
 	
 void ADC_Init()
@@ -565,7 +566,7 @@ void movement(){
 	ADC_Value_Y = ADC_Read(1);
 	if(ADC_Value_Y > 900){
 		pressed_confidence_level++;
-		if(pressed_confidence_level > 20){
+		if(pressed_confidence_level > PRESS_CONF){
 			go_left();
 			pressed_confidence_level = 0;
 		}
@@ -574,7 +575,7 @@ void movement(){
 	}
 	else if(ADC_Value_Y < 100){
 		pressed_confidence_level++;
-		if(pressed_confidence_level > 20){
+		if(pressed_confidence_level > PRESS_CONF){
 			go_right();
 			pressed_confidence_level = 0;
 		}
@@ -583,7 +584,7 @@ void movement(){
 	}
 	else if(ADC_Value_X > 900){
 		pressed_confidence_level++;
-		if(pressed_confidence_level > 20){
+		if(pressed_confidence_level > PRESS_CONF){
 			go_down();
 			pressed_confidence_level = 0;
 		}
@@ -592,7 +593,7 @@ void movement(){
 	}
 	else if(ADC_Value_X < 100){
 		pressed_confidence_level++;
-		if(pressed_confidence_level > 20){
+		if(pressed_confidence_level > PRESS_CONF+20){
 			rotate_shape(current_shape_array);
 			remove_shape(current_shape_array);
 			if(check_valid(current_R, current_C, temp_shape_array) == TRUE){
