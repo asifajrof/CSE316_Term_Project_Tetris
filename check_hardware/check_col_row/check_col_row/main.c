@@ -95,12 +95,33 @@ volatile bool current_display[16][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE,
 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE}};
+	
+bool play[16][8]=
+{{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, TRUE,  FALSE, FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, TRUE,  TRUE,  FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, TRUE,  TRUE,  TRUE,  FALSE, FALSE, FALSE},
+{FALSE, FALSE, TRUE,  TRUE,  TRUE,  TRUE,  FALSE, FALSE},
+{FALSE, FALSE, TRUE,  TRUE,  TRUE,  TRUE,  FALSE, FALSE},
+{FALSE, FALSE, TRUE,  TRUE,  TRUE,  FALSE, FALSE, FALSE},
+{FALSE, FALSE, TRUE,  TRUE,  FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, TRUE,  FALSE, FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE}};
 
 bool temp_shape_array[4][4];
 bool current_shape_array[4][4];
 volatile int current_R = 0;
 volatile int current_C = 2;
 int current_shape = -1;
+int count_speed = 175;
+int count_count = 0;
+
 void UART_init(void){
 	
 	int UBBRValue = 25;//AS described before setting baud rate
@@ -403,9 +424,9 @@ void go_down(){
 		update_score1x();
 	}
 }
-void generate_shape(int shape){
+void generate_shape(){
 	//int shape = 0;
-	//int shape = rand()%7;
+	int shape = rand()%7;
 	current_shape = shape;
 	if( shape == 0){
 		for(int i = 0 ; i < 4; i++){
@@ -458,8 +479,7 @@ void generate_shape(int shape){
 	}
 }
 
-int count_speed = 175;
-int count_count = 0;
+
 
 void start_again(){
 	for(int i = 0; i < 16; i++){
@@ -475,7 +495,6 @@ void start_again(){
 	PORTA &= ~(1 << PA2);
 	_delay_ms(200);
 }
-
 void display(int i){
 	uint8_t led_col = 0x00;
 	PORTC = 0x00; // common row connection
@@ -493,41 +512,67 @@ void display(int i){
 	PORTA |= 0xF0;
 	PORTD |= 0xF0;
 }
+void new_game(){
+	int ADC_Value_Y = -1;
+	for(int i = 0 ;i < 16 ; i++){
+		for(int j = 0; j < 8; j++){
+			current_display[i][j] = play[i][j];
+		}
+	}
+	int i = 7;
+	while(1){
+		display(i);
+		if(i == 7) i = 0;
+		else i++;
+		ADC_Value_Y = ADC_Read(1);
+		if(ADC_Value_Y < 100){
+			start_again();
+			UART_send(7);
+			return;
+		}
+	}
+}
 
-void new_piece(int r){
+
+
+
+void new_piece(){
 	if(current_R == 0 && current_C == 2 && current_shape == -1){
-		generate_shape(rand_val[r]);
+		generate_shape();
+		//generate_shape(rand_val[r]);
 		//remove_shape(current_shape_array);
 		if(check_valid(0 , 2 , current_shape_array) == TRUE){
-			UART_send(current_shape);
 			//set_shape(current_shape_array);
 			//_delay_ms(2);
 		}
 		else{
 			UART_send(9);
 			start_again();
+			new_game();
 			_delay_ms(200);
 		}
+		UART_send(current_shape);
 		set_shape(current_shape_array);
 	}
 }
 
-void movement(int ADC_Value_X, int ADC_Value_Y){
+void movement(){
+	int ADC_Value_X = -1, ADC_Value_Y = -1;
 	ADC_Value_X = ADC_Read(0);
 	ADC_Value_Y = ADC_Read(1);
 	if(ADC_Value_X < 100){
 		go_left();
 		_delay_ms(200);
 	}
-	if(ADC_Value_X > 900){
+	else if(ADC_Value_X > 900){
 		go_right();
 		_delay_ms(200);
 	}
-	if(ADC_Value_Y > 900){
+	else if(ADC_Value_Y > 900){
 		go_down();
 		_delay_ms(100);
 	}
-	if(ADC_Value_Y < 100){
+	else if(ADC_Value_Y < 100){
 		rotate_shape(current_shape_array);
 		remove_shape(current_shape_array);
 		if(check_valid(current_R, current_C, temp_shape_array) == TRUE){
@@ -541,18 +586,21 @@ void movement(int ADC_Value_X, int ADC_Value_Y){
 		_delay_ms(250);
 	}
 }
-int main(void)
-{
+
+void mcu_init(){
 	MCUCSR |= 1<<JTD;
 	MCUCSR |= 1<<JTD;
-	srand(time(NULL));
 	DDRA = 0b11111100;
 	DDRB = 0xFF;
 	DDRC = 0xFF;
 	DDRD = 0xFF;
-	PORTA &= 0b11111011;
-	int i = 7, count = 0,r = 0;
-	int ADC_Value_X = -1, ADC_Value_Y = -1;
+	PORTA &= 0b11111011; // for buzzer 
+}
+int main(void)
+{
+	srand(time(NULL));
+	mcu_init();
+	int i = 7, count = 0; //r = 0;
 	ADC_Init();
 	UART_init();
 	while (1)
@@ -561,9 +609,10 @@ int main(void)
 		if(i == 7) i = 0;
 		else i++;
 		//_delay_us(1500);
-		new_piece(r);
-		r++;
-		if(r == 100) r = 0;
+		new_piece();
+		//new_piece(r);
+		//r++;
+		//if(r == 100) r = 0;
 		count++;
 		if(count == count_speed){
 			go_down();
@@ -576,7 +625,7 @@ int main(void)
 			}
 			_delay_ms(5);
 		}
-		movement(ADC_Value_X, ADC_Value_Y);
+		movement();
 	}
 }
 

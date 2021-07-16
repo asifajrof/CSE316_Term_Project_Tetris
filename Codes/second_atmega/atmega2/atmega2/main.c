@@ -14,11 +14,11 @@
 typedef uint8_t bool;
 #define FALSE 0x00
 #define TRUE 0xFF
-volatile char row[] = {1, 2, 4, 8, 16, 32, 64, 128};
+char row[] = {1, 2, 4, 8, 16, 32, 64, 128};
 typedef enum { O, I, L, J, S, Z,  T } shape_type;
 
 /*
-volatile bool shape___array[8][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+bool shape___array[8][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 								   {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 								   {FALSE,  TRUE,  TRUE,  TRUE,  TRUE,  TRUE,  TRUE, FALSE},
 								   {FALSE,  TRUE,  TRUE,  TRUE,  TRUE,  TRUE,  TRUE, FALSE},
@@ -27,7 +27,7 @@ volatile bool shape___array[8][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FA
 								   {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 								   {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE}};
 */
-volatile bool shape_O_array[8][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+bool shape_O_array[8][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 {FALSE, FALSE,  TRUE,  TRUE,  TRUE,  TRUE, FALSE, FALSE},
 {FALSE, FALSE,  TRUE,  TRUE,  TRUE,  TRUE, FALSE, FALSE},
@@ -36,7 +36,7 @@ volatile bool shape_O_array[8][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FA
 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE}};
 
-volatile bool shape_I_array[8][8]={{FALSE, FALSE, FALSE,  TRUE,  TRUE, FALSE, FALSE, FALSE},
+bool shape_I_array[8][8]={{FALSE, FALSE, FALSE,  TRUE,  TRUE, FALSE, FALSE, FALSE},
 {FALSE, FALSE, FALSE,  TRUE,  TRUE, FALSE, FALSE, FALSE},
 {FALSE, FALSE, FALSE,  TRUE,  TRUE, FALSE, FALSE, FALSE},
 {FALSE, FALSE, FALSE,  TRUE,  TRUE, FALSE, FALSE, FALSE},
@@ -45,7 +45,7 @@ volatile bool shape_I_array[8][8]={{FALSE, FALSE, FALSE,  TRUE,  TRUE, FALSE, FA
 {FALSE, FALSE, FALSE,  TRUE,  TRUE, FALSE, FALSE, FALSE},
 {FALSE, FALSE, FALSE,  TRUE,  TRUE, FALSE, FALSE, FALSE}};
 
-volatile bool shape_L_array[8][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+bool shape_L_array[8][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 {FALSE, FALSE,  TRUE,  TRUE, FALSE, FALSE, FALSE, FALSE},
 {FALSE, FALSE,  TRUE,  TRUE, FALSE, FALSE, FALSE, FALSE},
 {FALSE, FALSE,  TRUE,  TRUE, FALSE, FALSE, FALSE, FALSE},
@@ -54,7 +54,7 @@ volatile bool shape_L_array[8][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FA
 {FALSE, FALSE,  TRUE,  TRUE,  TRUE,  TRUE, FALSE, FALSE},
 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE}};
 
-volatile bool shape_J_array[8][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+bool shape_J_array[8][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 {FALSE, FALSE, FALSE, FALSE,  TRUE,  TRUE, FALSE, FALSE},
 {FALSE, FALSE, FALSE, FALSE,  TRUE,  TRUE, FALSE, FALSE},
 {FALSE, FALSE, FALSE, FALSE,  TRUE,  TRUE, FALSE, FALSE},
@@ -63,7 +63,7 @@ volatile bool shape_J_array[8][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FA
 {FALSE, FALSE,  TRUE,  TRUE,  TRUE,  TRUE, FALSE, FALSE},
 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE}};
 
-volatile bool shape_S_array[8][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+bool shape_S_array[8][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 {FALSE, FALSE, FALSE,  TRUE,  TRUE,  TRUE,  TRUE, FALSE},
 {FALSE, FALSE, FALSE,  TRUE,  TRUE,  TRUE,  TRUE, FALSE},
@@ -72,7 +72,7 @@ volatile bool shape_S_array[8][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FA
 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE}};
 
-volatile bool shape_Z_array[8][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+bool shape_Z_array[8][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 {FALSE,  TRUE,  TRUE,  TRUE,  TRUE, FALSE, FALSE, FALSE},
 {FALSE,  TRUE,  TRUE,  TRUE,  TRUE, FALSE, FALSE, FALSE},
@@ -81,7 +81,7 @@ volatile bool shape_Z_array[8][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FA
 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE}};
 
-volatile bool shape_T_array[8][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+bool shape_T_array[8][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 {FALSE,  TRUE,  TRUE,  TRUE,  TRUE,  TRUE,  TRUE, FALSE},
 {FALSE,  TRUE,  TRUE,  TRUE,  TRUE,  TRUE,  TRUE, FALSE},
@@ -90,7 +90,7 @@ volatile bool shape_T_array[8][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FA
 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE}};
 
-volatile bool current_shape_array[8][8];
+bool current_shape_array[8][8];
 
 int get_col(int row)
 {
@@ -133,10 +133,10 @@ int main(void)
 	Lcd4_Init();
 	char ch1 ='-';	//next shape
 	int score_update = 0;
+	int flag = 1;
     while (1) 
     {
 		
-		int flag = 1;
 	    int ch = UART_receive();
 		if(ch == 10){
 			score_update++;
@@ -146,6 +146,9 @@ int main(void)
 		}
 		else if(ch == 9){
 			flag = 0;
+		}
+		else if(ch == 7){
+			flag = 1;
 		}
 		else if(ch == 0){
 			//shape_O
