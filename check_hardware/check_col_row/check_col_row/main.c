@@ -119,6 +119,7 @@ bool current_shape_array[4][4];
 volatile int current_R = 0;
 volatile int current_C = 2;
 int current_shape = -1;
+int next_shape = 0;
 int count_speed = 175;
 int count_count = 0;
 
@@ -427,7 +428,9 @@ void go_down(){
 void generate_shape(){
 	//int shape = 0;
 	int shape = rand()%7;
-	current_shape = shape;
+	current_shape = next_shape;
+	next_shape = shape;
+	shape = current_shape;
 	if( shape == 0){
 		for(int i = 0 ; i < 4; i++){
 			for(int j = 0; j < 4; j++){
@@ -480,7 +483,6 @@ void generate_shape(){
 }
 
 
-
 void start_again(){
 	for(int i = 0; i < 16; i++){
 		for(int j = 0; j < 8; j++){
@@ -513,7 +515,7 @@ void display(int i){
 	PORTD |= 0xF0;
 }
 void new_game(){
-	int ADC_Value_Y = -1;
+	int ADC_Value_X = -1;
 	for(int i = 0 ;i < 16 ; i++){
 		for(int j = 0; j < 8; j++){
 			current_display[i][j] = play[i][j];
@@ -524,8 +526,8 @@ void new_game(){
 		display(i);
 		if(i == 7) i = 0;
 		else i++;
-		ADC_Value_Y = ADC_Read(1);
-		if(ADC_Value_Y < 100){
+		ADC_Value_X = ADC_Read(0);
+		if(ADC_Value_X < 100){
 			start_again();
 			UART_send(7);
 			return;
@@ -551,7 +553,7 @@ void new_piece(){
 			new_game();
 			_delay_ms(200);
 		}
-		UART_send(current_shape);
+		UART_send(next_shape);
 		set_shape(current_shape_array);
 	}
 }
@@ -560,19 +562,19 @@ void movement(){
 	int ADC_Value_X = -1, ADC_Value_Y = -1;
 	ADC_Value_X = ADC_Read(0);
 	ADC_Value_Y = ADC_Read(1);
-	if(ADC_Value_X < 100){
+	if(ADC_Value_Y > 900){
 		go_left();
 		_delay_ms(200);
 	}
-	else if(ADC_Value_X > 900){
+	else if(ADC_Value_Y < 100){
 		go_right();
 		_delay_ms(200);
 	}
-	else if(ADC_Value_Y > 900){
+	else if(ADC_Value_X > 900){
 		go_down();
 		_delay_ms(100);
 	}
-	else if(ADC_Value_Y < 100){
+	else if(ADC_Value_X < 100){
 		rotate_shape(current_shape_array);
 		remove_shape(current_shape_array);
 		if(check_valid(current_R, current_C, temp_shape_array) == TRUE){
@@ -603,6 +605,7 @@ int main(void)
 	int i = 7, count = 0; //r = 0;
 	ADC_Init();
 	UART_init();
+	new_game();
 	while (1)
 	{
 		display(i);

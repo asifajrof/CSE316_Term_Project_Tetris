@@ -1,4 +1,3 @@
-
 #define F_CPU 1000000
 #define D4 eS_PORTD4
 #define D5 eS_PORTD5
@@ -14,7 +13,7 @@
 typedef uint8_t bool;
 #define FALSE 0x00
 #define TRUE 0xFF
-char row[] = {1, 2, 4, 8, 16, 32, 64, 128};
+//char row[] = {1, 2, 4, 8, 16, 32, 64, 128};
 typedef enum { O, I, L, J, S, Z,  T } shape_type;
 
 /*
@@ -27,7 +26,7 @@ bool shape___array[8][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALS
 								   {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 								   {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE}};
 */
-bool shape_O_array[8][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
+/*bool shape_O_array[8][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 {FALSE, FALSE,  TRUE,  TRUE,  TRUE,  TRUE, FALSE, FALSE},
 {FALSE, FALSE,  TRUE,  TRUE,  TRUE,  TRUE, FALSE, FALSE},
@@ -90,9 +89,11 @@ bool shape_T_array[8][8]={{FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALS
 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE},
 {FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE}};
 
-bool current_shape_array[8][8];
+bool current_shape_array[8][8];*/
+char ch1 ='-';	//next shape
+int flag = 2;
 
-int get_col(int row)
+/*int get_col(int row)
 {
 	int col_value = 0x00;
 	for (int j=0; j<8; j++){
@@ -101,7 +102,7 @@ int get_col(int row)
 		}
 	}
 	return col_value;
-}
+}*/
 
 void UART_init(void){
 	int UBRR_Value = 25; // 2400 baud rate
@@ -120,23 +121,92 @@ unsigned char UART_receive(void){
 	while ((UCSRA & (1<<RXC)) == 0x00);
 	return UDR; // Read the received character from UDR
 }
+void new_game(){
+	char first_msg[] =  "Press up for    ";
+	char second_msg[] = "starting game   ";
+	Lcd4_Set_Cursor(1,0);
+	Lcd4_Write_String(first_msg);
+	Lcd4_Set_Cursor(2,0);
+	Lcd4_Write_String(second_msg);
+}
 
+void next_piece(int ch){
+	if(ch == 0){
+		//shape_O
+		/*for(int i = 0 ; i < 8; i++){
+			for(int j = 0; j < 8; j++){
+				current_shape_array[i][j] = shape_O_array[i][j];
+			}
+		}*/
+		ch1 = 'O';
+	}
+	else if(ch == 1){
+		//shape_I
+		/*for(int i = 0 ; i < 8; i++){
+			for(int j = 0; j < 8; j++){
+				current_shape_array[i][j] = shape_I_array[i][j];
+			}
+		}*/
+		ch1 = 'I';
+	}
+	else if(ch == 2){
+		//shape_L
+		/*for(int i = 0 ; i < 8; i++){
+			for(int j = 0; j < 8; j++){
+				current_shape_array[i][j] = shape_L_array[i][j];
+			}
+		}*/
+		ch1 = 'L';
+	}
+	else if(ch == 3){
+		//shape_J
+		/*for(int i = 0 ; i < 8; i++){
+			for(int j = 0; j < 8; j++){
+				current_shape_array[i][j] = shape_J_array[i][j];
+			}
+		}*/
+		ch1 = 'J';
+	}
+	else if(ch == 4){
+		//shape_S
+		/*for(int i = 0 ; i < 8; i++){
+			for(int j = 0; j < 8; j++){
+				current_shape_array[i][j] = shape_S_array[i][j];
+			}
+		}*/
+		ch1 = 'S';
+	}
+	else if(ch ==5){
+		//shape_Z
+		/*for(int i = 0 ; i < 8; i++){
+			for(int j = 0; j < 8; j++){
+				current_shape_array[i][j] = shape_Z_array[i][j];
+			}
+		}*/
+		ch1 = 'Z';
+	}
+	else if(ch == 6){
+		//shape_T
+		/*for(int i = 0 ; i < 8; i++){
+			for(int j = 0; j < 8; j++){
+				current_shape_array[i][j] = shape_T_array[i][j];
+			}
+		}*/
+		ch1 = 'T';
+	}
+}
 int main(void)
 { 
 	MCUCSR |= 1<<JTD;
 	MCUCSR |= 1<<JTD;
     DDRD = 0b11111110;
     DDRC = 0xFF;
-	DDRA = 0xFF;
-	DDRB = 0xFF;
 	UART_init();
 	Lcd4_Init();
-	char ch1 ='-';	//next shape
 	int score_update = 0;
-	int flag = 1;
+	new_game();
     while (1) 
     {
-		
 	    int ch = UART_receive();
 		if(ch == 10){
 			score_update++;
@@ -149,75 +219,13 @@ int main(void)
 		}
 		else if(ch == 7){
 			flag = 1;
+			ch = UART_receive();
 		}
-		else if(ch == 0){
-			//shape_O
-			for(int i = 0 ; i < 8; i++){
-				for(int j = 0; j < 8; j++){
-					current_shape_array[i][j] = shape_O_array[i][j];
-				}
-			}
-			ch1 = 'O';
-		}
-		else if(ch == 1){
-			//shape_I
-			for(int i = 0 ; i < 8; i++){
-				for(int j = 0; j < 8; j++){
-					current_shape_array[i][j] = shape_I_array[i][j];
-				}
-			}
-			ch1 = 'I';
-		}
-		else if(ch == 2){
-			//shape_L
-			for(int i = 0 ; i < 8; i++){
-				for(int j = 0; j < 8; j++){
-					current_shape_array[i][j] = shape_L_array[i][j];
-				}
-			}
-			ch1 = 'L';
-		}
-		else if(ch == 3){
-			//shape_J
-			for(int i = 0 ; i < 8; i++){
-				for(int j = 0; j < 8; j++){
-					current_shape_array[i][j] = shape_J_array[i][j];
-				}
-			}
-			ch1 = 'J';
-		}
-		else if(ch == 4){
-			//shape_S
-			for(int i = 0 ; i < 8; i++){
-				for(int j = 0; j < 8; j++){
-					current_shape_array[i][j] = shape_S_array[i][j];
-				}
-			}
-			ch1 = 'S';
-		}
-		else if(ch ==5){
-			//shape_Z
-			for(int i = 0 ; i < 8; i++){
-				for(int j = 0; j < 8; j++){
-					current_shape_array[i][j] = shape_Z_array[i][j];
-				}
-			}
-			ch1 = 'Z';
-		}
-		else if(ch == 6){
-			//shape_T
-			for(int i = 0 ; i < 8; i++){
-				for(int j = 0; j < 8; j++){
-					current_shape_array[i][j] = shape_T_array[i][j];
-				}
-			}
-			ch1 = 'T';
-		}
+		
+		next_piece(ch);
 		char score[3];	
 		dtostrf(score_update , 3, 0, score);
 		
-		//char score_msg[16];
-		//char second_msg[16];
 		if(flag == 1 ){
 			//Lcd4_Clear();
 			char score_msg[] = " Score:         ";
@@ -234,8 +242,7 @@ int main(void)
 			Lcd4_Set_Cursor(2,0);
 			Lcd4_Write_String(second_msg);
 		}
-		
-		else{
+		else if(flag == 0){
 			//Lcd4_Clear();
 			char score_msg[] = "Final Score:    ";
 			for(int score_i=0; score_i<3; score_i++){
@@ -250,16 +257,12 @@ int main(void)
 			Lcd4_Set_Cursor(2,0);
 			Lcd4_Write_String(second_msg);
 			score_update = 0;
+			_delay_ms(3000);
+			flag = 2;
 		}
-		/*
-		for(int t = 0 ; t < 500; t++){
-			for(int i=0; i<8; i++){
-				PORTA = ~row[i];
-				PORTB = get_col(i);
-			}
-		}*/	
-		
-		//_delay_us(10);
+		if(flag == 2){
+			new_game();
+		}
     }
 }
 
