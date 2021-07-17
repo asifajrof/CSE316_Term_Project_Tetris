@@ -371,7 +371,7 @@ void update_score1x(){
 }
 void update_score2x(){
 	uint8_t temp ;
-	for(int i = 0 ; i < 12 ; i++){
+	for(int i = 0 ; i < 13 ; i++){
 		temp = TRUE;
 		int ii = i;
 		for(int t = 0; t < 4; t++){
@@ -387,7 +387,7 @@ void update_score2x(){
 			PORTA &= ~(1 << PA2);
 			_delay_ms(200);
 			for(int t = 0; t < 4; t++){
-				remove_row(i);
+				remove_row(i+3);
 			}
 		}
 	}
@@ -648,6 +648,8 @@ int main(void)
 		//new_piece(r);
 		//r++;
 		//if(r == 100) r = 0;
+		
+		movement();
 		count++;
 		if(count == count_speed){
 			go_down();
@@ -660,7 +662,7 @@ int main(void)
 			}
 			_delay_ms(5);
 		}
-		movement();
+		//movement();
 	}
 }
 
