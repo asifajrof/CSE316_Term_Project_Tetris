@@ -432,6 +432,7 @@ void generate_shape(){
 	current_shape = next_shape;
 	next_shape = shape;
 	shape = current_shape;
+	//shape = 2;
 	if( shape == 0){
 		for(int i = 0 ; i < 4; i++){
 			for(int j = 0; j < 4; j++){
@@ -593,7 +594,7 @@ void movement(){
 	}
 	else if(ADC_Value_X < 100){
 		pressed_confidence_level++;
-		if(pressed_confidence_level > PRESS_CONF+20){
+		if(pressed_confidence_level > PRESS_CONF+17){
 			rotate_shape(current_shape_array);
 			remove_shape(current_shape_array);
 			if(check_valid(current_R, current_C, temp_shape_array) == TRUE){

@@ -1861,6 +1861,7 @@ void generate_shape(){
      956:	90 93 67 01 	sts	0x0167, r25	; 0x800167 <next_shape+0x1>
      95a:	80 93 66 01 	sts	0x0166, r24	; 0x800166 <next_shape>
 	shape = current_shape;
+	//shape = 2;
 	if( shape == 0){
      95e:	21 15       	cp	r18, r1
      960:	31 05       	cpc	r19, r1
@@ -1886,9 +1887,9 @@ void generate_shape(){
      982:	e2 0f       	add	r30, r18
      984:	f3 1f       	adc	r31, r19
      986:	40 83       	st	Z, r20
-	current_shape = next_shape;
 	next_shape = shape;
 	shape = current_shape;
+	//shape = 2;
 	if( shape == 0){
 		for(int i = 0 ; i < 4; i++){
 			for(int j = 0; j < 4; j++){
@@ -1900,10 +1901,10 @@ void generate_shape(){
      992:	24 30       	cpi	r18, 0x04	; 4
      994:	31 05       	cpc	r19, r1
      996:	3c f3       	brlt	.-50     	; 0x966 <generate_shape+0x2c>
-	int shape = rand()%7;
 	current_shape = next_shape;
 	next_shape = shape;
 	shape = current_shape;
+	//shape = 2;
 	if( shape == 0){
 		for(int i = 0 ; i < 4; i++){
      998:	6f 5f       	subi	r22, 0xFF	; 255
@@ -2693,8 +2694,8 @@ void movement(){
      de4:	01 96       	adiw	r24, 0x01	; 1
      de6:	90 93 63 01 	sts	0x0163, r25	; 0x800163 <__data_end+0x1>
      dea:	80 93 62 01 	sts	0x0162, r24	; 0x800162 <__data_end>
-		if(pressed_confidence_level > PRESS_CONF+20){
-     dee:	87 34       	cpi	r24, 0x47	; 71
+		if(pressed_confidence_level > PRESS_CONF+17){
+     dee:	84 34       	cpi	r24, 0x44	; 68
      df0:	91 05       	cpc	r25, r1
      df2:	0c f4       	brge	.+2      	; 0xdf6 <movement+0xbc>
      df4:	40 c0       	rjmp	.+128    	; 0xe76 <movement+0x13c>
@@ -2737,7 +2738,7 @@ void movement(){
      e40:	e2 0f       	add	r30, r18
      e42:	f3 1f       	adc	r31, r19
      e44:	40 83       	st	Z, r20
-		if(pressed_confidence_level > PRESS_CONF+20){
+		if(pressed_confidence_level > PRESS_CONF+17){
 			rotate_shape(current_shape_array);
 			remove_shape(current_shape_array);
 			if(check_valid(current_R, current_C, temp_shape_array) == TRUE){
@@ -2752,7 +2753,7 @@ void movement(){
      e52:	31 05       	cpc	r19, r1
      e54:	3c f3       	brlt	.-50     	; 0xe24 <movement+0xea>
 		pressed_confidence_level++;
-		if(pressed_confidence_level > PRESS_CONF+20){
+		if(pressed_confidence_level > PRESS_CONF+17){
 			rotate_shape(current_shape_array);
 			remove_shape(current_shape_array);
 			if(check_valid(current_R, current_C, temp_shape_array) == TRUE){
