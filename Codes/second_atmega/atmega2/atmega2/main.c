@@ -122,6 +122,7 @@ unsigned char UART_receive(void){
 	return UDR; // Read the received character from UDR
 }
 void new_game(){
+	Lcd4_Init();
 	char first_msg[] =  "Press up for    ";
 	char second_msg[] = "starting game   ";
 	Lcd4_Set_Cursor(1,0);
@@ -228,6 +229,7 @@ int main(void)
 		
 		if(flag == 1 ){
 			//Lcd4_Clear();
+			Lcd4_Init();
 			char score_msg[] = " Score:         ";
 			for(int score_i=0; score_i<3; score_i++){
 				if(score[score_i] == '.')
@@ -244,6 +246,7 @@ int main(void)
 		}
 		else if(flag == 0){
 			//Lcd4_Clear();
+			Lcd4_Init();
 			char score_msg[] = "Final Score:    ";
 			for(int score_i=0; score_i<3; score_i++){
 				if(score[score_i] == '.')
